@@ -471,7 +471,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
           <span>Chave PIX:</span>
           <span class="pix-key-val">leofrancasilva13@gmail.com</span>
         </div>
-        <button class="btn-copy" onclick="copyPixKey()">📋 Copiar Chave</button>
+        <button class="btn-copy" onclick="copyPixKey()">📋 Copiar Copia e Cola</button>
         <div class="pix-btns">
           <button class="btn-confirm" id="btn-pay-confirm">✅ Confirmar Pagamento</button>
           <button class="btn-cancel" onclick="backToMethods()">← Voltar</button>
@@ -750,7 +750,22 @@ function getQty(c){return c.items.reduce((s,i)=>s+i.qty,0)}
 function pc(i){return i===0?'g':i===1?'s':i===2?'b':'n'}
 
 const PIX_KEY='leofrancasilva13@gmail.com'
+const PIX_NAME='Leonardo Franca Silva'
+const PIX_CITY='Salvador'
 let pixComandaId=null
+
+/* Gerador de Payload PIX EMV/BR Code */
+function pixPayload(valor){
+  const f=(id,val)=>id+String(val.length).padStart(2,'0')+val
+  const merchant=f('00','br.gov.bcb.pix')+f('01',PIX_KEY)
+  const txid='BT'+Date.now().toString(36).toUpperCase()
+  const addData=f('05',txid.slice(0,25))
+  let payload=f('00','01')+f('01','12')+f('26',merchant)+f('52','0000')+f('53','986')+(valor>0?f('54',valor.toFixed(2)):'')+f('58','BR')+f('59',PIX_NAME.slice(0,25))+f('60',PIX_CITY.slice(0,15))+f('62',addData)
+  payload+='6304'
+  let crc=0xFFFF
+  for(let i=0;i<payload.length;i++){crc^=payload.charCodeAt(i)<<8;for(let j=0;j<8;j++)crc=crc&0x8000?(crc<<1)^0x1021:crc<<1;crc&=0xFFFF}
+  return payload+crc.toString(16).toUpperCase().padStart(4,'0')
+}
 
 function fecharMesa(id){
   const all=loadComandas(),c=all.find(x=>x.id===id);if(!c)return
@@ -761,7 +776,9 @@ function fecharMesa(id){
   document.getElementById('pay-methods').style.display='flex'
   document.getElementById('pix-detail').style.display='none'
   document.getElementById('card-detail').style.display='none'
-  document.getElementById('pix-qr-wrap').innerHTML='<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='+encodeURIComponent(PIX_KEY)+'" alt="QR PIX" width="180" height="180"/>'
+  var pixCode=pixPayload(total)
+  document.getElementById('pix-qr-wrap').innerHTML='<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='+encodeURIComponent(pixCode)+'" alt="QR PIX" width="180" height="180"/>'
+  document.getElementById('pix-qr-wrap').dataset.pixCode=pixCode
   document.getElementById('btn-pay-confirm').onclick=function(){confirmDashPayment(id,'pix')}
   document.getElementById('modal-pay').classList.add('open')
 }
@@ -776,7 +793,7 @@ function confirmDashPayment(id,method){
   c.status='paga';c.pagamento=nowStr();c.formaPagamento=method
   saveComandas(all);closePayModal();init()
 }
-function copyPixKey(){navigator.clipboard.writeText(PIX_KEY).then(function(){var b=document.querySelector('.btn-copy');b.textContent='✅ Copiado!';setTimeout(function(){b.textContent='📋 Copiar Chave'},2000)})}
+function copyPixKey(){var code=document.getElementById('pix-qr-wrap').dataset.pixCode||PIX_KEY;navigator.clipboard.writeText(code).then(function(){var b=document.querySelector('.btn-copy');b.textContent='✅ Copiado!';setTimeout(function(){b.textContent='📋 Copiar Copia e Cola'},2000)})}
 function closePayModal(){document.getElementById('modal-pay').classList.remove('open');pixComandaId=null}
 
 function viewComanda(id){
