@@ -586,7 +586,7 @@ function updateThemeBtn(){
 (function(){if(localStorage.getItem('btTheme')==='dark'){document.documentElement.dataset.theme='dark';updateThemeBtn()}})();
 
 // ── LOGIN SYSTEM ──
-const CREDENTIALS={user:'admin',pass:'admin'}
+const CREDENTIALS={user:'admin',pass:'buteco2024'}
 function doLogin(){
   const u=document.getElementById('login-user').value.trim()
   const p=document.getElementById('login-pass').value
@@ -614,8 +614,8 @@ function doLogin(){
 })();
 
 const fmtP=p=>p!=null?'R$ '+p.toFixed(2).replace('.',','):'R$ 0,00'
-const fmtP2=p=>'R$ '+p.toFixed(2).replace('.',',')
-function loadComandas(){return JSON.parse(localStorage.getItem('btComandas')||'[]')}
+function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function loadComandas(){try{return JSON.parse(localStorage.getItem('btComandas')||'[]')}catch(e){return []}}
 function saveComandas(c){localStorage.setItem('btComandas',JSON.stringify(c));window.dispatchEvent(new Event('storage'))}
 const nowStr=()=>new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})
 
@@ -793,7 +793,7 @@ function confirmDashPayment(id,method){
   c.status='paga';c.pagamento=nowStr();c.formaPagamento=method
   saveComandas(all);closePayModal();init()
 }
-function copyPixKey(){var code=document.getElementById('pix-qr-wrap').dataset.pixCode||PIX_KEY;navigator.clipboard.writeText(code).then(function(){var b=document.querySelector('.btn-copy');b.textContent='✅ Copiado!';setTimeout(function(){b.textContent='📋 Copiar Copia e Cola'},2000)})}
+function copyPixKey(){var code=document.getElementById('pix-qr-wrap').dataset.pixCode||PIX_KEY;navigator.clipboard.writeText(code).then(function(){var b=document.querySelector('.btn-copy');b.textContent='✅ Copiado!';setTimeout(function(){b.textContent='📋 Copiar Copia e Cola'},2000)}).catch(function(){prompt('Copie o código PIX:',code)})}
 function closePayModal(){document.getElementById('modal-pay').classList.remove('open');pixComandaId=null}
 
 function viewComanda(id){
@@ -802,12 +802,12 @@ function viewComanda(id){
   document.getElementById('detail-title').textContent=`Sombreiro ${c.mesa}${c.cliente?' · '+c.cliente:''}`
   document.getElementById('detail-body').innerHTML=`
     <div style="font-size:12px;color:var(--sub);margin-bottom:8px">
-      ${c.abertura} · ${c.status.toUpperCase()}${c.formaPagamento?' · '+({pix:'PIX',debito:'Débito',credito:'Crédito'}[c.formaPagamento]||c.formaPagamento):''}${c.atendente?' · Atendente: '+c.atendente:''}${c.pessoas?' · '+c.pessoas+' pessoas':''}
+      ${esc(c.abertura)} · ${esc(c.status).toUpperCase()}${c.formaPagamento?' · '+({pix:'PIX',debito:'Débito',credito:'Crédito'}[c.formaPagamento]||esc(c.formaPagamento)):''}${c.atendente?' · Atendente: '+esc(c.atendente):''}${c.pessoas?' · '+c.pessoas+' pessoas':''}
     </div>
-    <div class="detail-items">${c.items.map(i=>`<div class="di"><span class="di-name">${i.name}</span><span class="di-qty">x${i.qty}</span><span class="di-price">${i.price!=null?fmtP(i.price*i.qty):'Consultar'}</span></div>`).join('')}
-    ${!c.items.length?'<div style="text-align:center;padding:12px;color:var(--sub);font-size:11px">Sem itens</div>':''}
+    <div class="detail-items">${(c.items||[]).map(i=>`<div class="di"><span class="di-name">${esc(i.name)}</span><span class="di-qty">x${i.qty}</span><span class="di-price">${i.price!=null?fmtP(i.price*i.qty):'Consultar'}</span></div>`).join('')}
+    ${!c.items||!c.items.length?'<div style="text-align:center;padding:12px;color:var(--sub);font-size:11px">Sem itens</div>':''}
     </div>
-    ${c.obs?`<div style="background:#fffbe6;border:1px solid #ffeaa7;border-radius:8px;padding:8px;font-size:11px;color:#7d6608;margin-bottom:8px"><strong>📝</strong> ${c.obs}</div>`:''}
+    ${c.obs?`<div style="background:#fffbe6;border:1px solid #ffeaa7;border-radius:8px;padding:8px;font-size:11px;color:#7d6608;margin-bottom:8px"><strong>📝</strong> ${esc(c.obs)}</div>`:''}
     <div style="font-size:18px;font-weight:900;color:var(--blue);text-align:right;padding-top:8px;border-top:1px solid #e8edf3">Total: ${fmtP(total)}</div>`
   document.getElementById('modal-detail').classList.add('open')
 }
@@ -878,8 +878,8 @@ function init(){
     else if(c.status==='fechada')actBtn='<button class="ot-close" onclick="event.stopPropagation();fecharMesa(\''+c.id+'\')" style="margin-left:auto;flex-shrink:0;background:#e8faf0;color:var(--green)">💳 Pagar</button>'
     return `<div style="background:var(--card);border-radius:12px;border:1px solid #e8edf3;overflow:hidden;cursor:pointer;transition:transform .2s" onclick="viewComanda('${c.id}')">
       <div style="display:flex;align-items:center;gap:8px;padding:12px 14px;background:${c.status==='aberta'?'#f4faff':c.status==='fechada'?'#fff8ed':'#f8f8f8'};border-bottom:1px solid #e8edf3;flex-wrap:wrap">
-        <div style="width:32px;height:32px;border-radius:8px;background:${c.status==='aberta'?'linear-gradient(135deg,var(--blue),var(--blue2))':c.status==='fechada'?'linear-gradient(135deg,var(--orange),#f39c12)':'#ccc'};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;flex-shrink:0">${c.mesa}</div>
-        <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800;color:var(--dark)">Sombreiro ${c.mesa}${c.atendente?' — Garçom: '+c.atendente:''}</div><div style="font-size:10px;color:var(--sub)">${c.cliente?'👤 '+c.cliente+' · ':''}${qi} itens · ${c.abertura}</div></div>
+        <div style="width:32px;height:32px;border-radius:8px;background:${c.status==='aberta'?'linear-gradient(135deg,var(--blue),var(--blue2))':c.status==='fechada'?'linear-gradient(135deg,var(--orange),#f39c12)':'#ccc'};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;flex-shrink:0">${esc(c.mesa)}</div>
+        <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800;color:var(--dark)">Sombreiro ${esc(c.mesa)}${c.atendente?' — Garçom: '+esc(c.atendente):''}</div><div style="font-size:10px;color:var(--sub)">${c.cliente?'👤 '+esc(c.cliente)+' · ':''}${qi} itens · ${esc(c.abertura)}</div></div>
         <span class="status-tag st-${c.status}" style="flex-shrink:0">${stTag}</span>
         ${actBtn}
       </div>
@@ -1154,11 +1154,12 @@ let calcStr='0'
 function toggleCalc(){document.getElementById('modal-calc').classList.toggle('open')}
 function calcInput(v){if(calcStr==='0'&&!isNaN(v))calcStr=v;else calcStr+=v;document.getElementById('calc-display').textContent=calcStr}
 function calcClear(){calcStr='0';document.getElementById('calc-display').textContent='0'}
-function calcEqual(){try{calcStr=String(eval(calcStr));document.getElementById('calc-display').textContent=calcStr}catch(e){document.getElementById('calc-display').textContent='Erro';calcStr='0'}}
+function calcEqual(){try{if(/[^0-9+\-*/.() ]/.test(calcStr))throw'invalid';calcStr=String(Function('"use strict";return ('+calcStr+')')());document.getElementById('calc-display').textContent=calcStr}catch(e){document.getElementById('calc-display').textContent='Erro';calcStr='0'}}
 
 function exportPDF(){
   const text=document.getElementById('report-text').textContent
   const w=window.open('','_blank','width=800,height=600')
+  if(!w){alert('Popup bloqueado. Permita popups para imprimir.');return}
   w.document.write('<html><head><title>Relatório Buteco do Tattoo</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:monospace;font-size:12px;padding:30px;line-height:1.8;white-space:pre-wrap;color:#1a2a3a}h1{font-family:sans-serif;font-size:18px;margin-bottom:16px;text-align:center}@media print{body{padding:15px}}</style></head><body><h1>Relatório — Buteco do Tattoo</h1>'+text.replace(/</g,'&lt;')+'<script>setTimeout(function(){window.print()},400)<\/script></body></html>')
 }
 

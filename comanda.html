@@ -1899,8 +1899,9 @@
     const catOrder = ['entradas', 'refeicoes', 'extras', 'bebidas', 'cervejas', 'drinks', 'doses']
     const fmtP = p => p != null ? 'R$ ' + p.toFixed(2).replace('.', ',') : 'A consultar'
     const now = () => new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })
+    function esc(s) { if (!s) return ''; return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;') }
 
-    function loadComandas() { return JSON.parse(localStorage.getItem('btComandas') || '[]') }
+    function loadComandas() { try { return JSON.parse(localStorage.getItem('btComandas') || '[]') } catch (e) { return [] } }
     function saveComandas(c) { localStorage.setItem('btComandas', JSON.stringify(c)); window.dispatchEvent(new Event('storage')) }
 
     let currentFilter = 'all', addingTo = null, pixComandaId = null
@@ -1969,18 +1970,18 @@
         <button class="ibtn ibtn-plus" onclick="chgQty('${c.id}',${i.id},1)"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
         <button class="ibtn ibtn-del" onclick="rmItem('${c.id}',${i.id})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
       </div>`: ''
-          return `<div class="c-item"><span class="c-item-name">${i.name}</span><span class="c-item-qty">x${i.qty}</span><span class="c-item-price">${i.price != null ? fmtP(i.price * i.qty) : 'Consultar'}</span>${eb}</div>`
+          return `<div class="c-item"><span class="c-item-name">${esc(i.name)}</span><span class="c-item-qty">x${i.qty}</span><span class="c-item-price">${i.price != null ? fmtP(i.price * i.qty) : 'Consultar'}</span>${eb}</div>`
         }).join('')
 
         return `<div class="card ${c.status}">
       <div class="card-head">
-        <div class="card-mesa"><div class="mesa-num">${c.mesa}</div><div class="mesa-info"><h3>Sombreiro ${c.mesa}</h3><span>${c.abertura} · ${qi} ${qi === 1 ? 'item' : 'itens'}</span></div></div>
+        <div class="card-mesa"><div class="mesa-num">${esc(c.mesa)}</div><div class="mesa-info"><h3>Sombreiro ${esc(c.mesa)}</h3><span>${esc(c.abertura)} · ${qi} ${qi === 1 ? 'item' : 'itens'}</span></div></div>
         <span class="status-tag st-${c.status}">${c.status === 'aberta' ? '🟢 Aberta' : c.status === 'fechada' ? '🟠 Fechada' : '✅ Paga' + (c.formaPagamento ? ' (' + ({ pix: 'PIX', debito: 'Débito', credito: 'Crédito' }[c.formaPagamento] || c.formaPagamento) + ')' : '')}</span>
       </div>
       <div class="card-body">
-        ${c.atendente || c.cliente ? `<div class="card-client">${c.atendente ? '🏷️ <strong>' + c.atendente + '</strong>' : ''}${c.cliente ? ' · 👤 ' + c.cliente : ''}</div>` : ''}
+        ${c.atendente || c.cliente ? `<div class="card-client">${c.atendente ? '🏷️ <strong>' + esc(c.atendente) + '</strong>' : ''}${c.cliente ? ' · 👤 ' + esc(c.cliente) : ''}</div>` : ''}
         <div class="card-items">${itemsH}${!c.items.length ? '<div style="text-align:center;padding:10px;color:var(--sub);font-size:11px">Sem itens</div>' : ''}</div>
-        ${c.obs ? `<div class="card-obs"><strong>📝</strong> ${c.obs}</div>` : ''}
+        ${c.obs ? `<div class="card-obs"><strong>📝</strong> ${esc(c.obs)}</div>` : ''}
       </div>
       <div class="card-foot"><div class="card-total">${ts}</div><div class="card-actions">${acts}</div></div>
     </div>`
@@ -1991,6 +1992,8 @@
     function criarComanda() {
       const atendente = document.getElementById('inp-atendente').value.trim()
       const mesa = document.getElementById('inp-mesa').value.trim()
+      document.getElementById('inp-atendente').style.borderColor = ''
+      document.getElementById('inp-mesa').style.borderColor = ''
       if (!atendente) { document.getElementById('inp-atendente').style.borderColor = 'var(--red)'; return }
       if (!mesa) { document.getElementById('inp-mesa').style.borderColor = 'var(--red)'; return }
       const c = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), mesa, cliente: document.getElementById('inp-client').value.trim(), atendente, pessoas: null, items: [], obs: '', status: 'aberta', abertura: now(), fechamento: null, pagamento: null }
@@ -2046,7 +2049,7 @@
     }
     function copyPixKey() {
       const code = document.getElementById('pix-qr-wrap').dataset.pixCode || PIX_KEY
-      navigator.clipboard.writeText(code).then(() => { const b = document.querySelector('.btn-copy'); b.textContent = '✅ Copiado!'; setTimeout(() => b.textContent = '📋 Copiar Copia e Cola', 2000) })
+      navigator.clipboard.writeText(code).then(() => { const b = document.querySelector('.btn-copy'); b.textContent = '✅ Copiado!'; setTimeout(() => b.textContent = '📋 Copiar Copia e Cola', 2000) }).catch(() => { prompt('Copie o código PIX:', code) })
     }
     function closePayModal() { document.getElementById('modal-pay').classList.remove('open'); pixComandaId = null }
     function pagarComanda(id) { fecharComanda(id) }
@@ -2056,7 +2059,8 @@
       const all = loadComandas(), c = all.find(x => x.id === id); if (!c) return
       const total = c.items.filter(i => i.price != null).reduce((s, i) => s + i.price * i.qty, 0)
       const w = window.open('', '_blank', 'width=320,height=500')
-      w.document.write(`<html><head><title>Mesa ${c.mesa}</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:monospace;font-size:12px;padding:10px;width:280px}h2{text-align:center;margin-bottom:8px}hr{border:none;border-top:1px dashed #999;margin:6px 0}.row{display:flex;justify-content:space-between;padding:2px 0}.total{font-weight:bold;font-size:14px}</style></head><body><h2>🌴 Buteco do Tattoo</h2><p style="text-align:center;font-size:10px">Stella Mares — Salvador</p><hr><div class="row"><b>Mesa: ${c.mesa}</b><span>${c.abertura}</span></div>${c.cliente ? '<div>Cliente: ' + c.cliente + '</div>' : ''}${c.atendente ? '<div>Atendente: ' + c.atendente + '</div>' : ''}<hr>${c.items.map(i => `<div class="row"><span>${i.name} x${i.qty}</span><span>${i.price != null ? fmtP(i.price * i.qty) : 'Consultar'}</span></div>`).join('')}<hr><div class="row total"><span>TOTAL</span><span>${fmtP(total)}</span></div><hr><p style="text-align:center;font-size:9px;margin-top:6px">Obrigado! 🌴</p><script>setTimeout(()=>window.print(),300)<\/script></body></html>`)
+      if (!w) { alert('Popup bloqueado. Permita popups para imprimir.'); return }
+      w.document.write(`<html><head><title>Mesa ${esc(c.mesa)}</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:monospace;font-size:12px;padding:10px;width:280px}h2{text-align:center;margin-bottom:8px}hr{border:none;border-top:1px dashed #999;margin:6px 0}.row{display:flex;justify-content:space-between;padding:2px 0}.total{font-weight:bold;font-size:14px}</style></head><body><h2>🌴 Buteco do Tattoo</h2><p style="text-align:center;font-size:10px">Stella Mares — Salvador</p><hr><div class="row"><b>Mesa: ${esc(c.mesa)}</b><span>${esc(c.abertura)}</span></div>${c.cliente ? '<div>Cliente: ' + esc(c.cliente) + '</div>' : ''}${c.atendente ? '<div>Atendente: ' + esc(c.atendente) + '</div>' : ''}<hr>${c.items.map(i => `<div class="row"><span>${esc(i.name)} x${i.qty}</span><span>${i.price != null ? fmtP(i.price * i.qty) : 'Consultar'}</span></div>`).join('')}<hr><div class="row total"><span>TOTAL</span><span>${fmtP(total)}</span></div><hr><p style="text-align:center;font-size:9px;margin-top:6px">Obrigado! 🌴</p><script>setTimeout(()=>window.print(),300)<\/script></body></html>`)
     }
 
     /* ── MODALS ── */
@@ -2078,7 +2082,7 @@
     function toggleCalc() { document.getElementById('modal-calc').classList.toggle('open') }
     function calcInput(v) { if (calcStr === '0' && !isNaN(v)) calcStr = v; else calcStr += v; document.getElementById('calc-display').textContent = calcStr }
     function calcClear() { calcStr = '0'; document.getElementById('calc-display').textContent = '0' }
-    function calcEqual() { try { calcStr = String(eval(calcStr)); document.getElementById('calc-display').textContent = calcStr } catch (e) { document.getElementById('calc-display').textContent = 'Erro'; calcStr = '0' } }
+    function calcEqual() { try { if (/[^0-9+\-*/.() ]/.test(calcStr)) throw 'invalid'; calcStr = String(Function('"use strict";return (' + calcStr + ')')()); document.getElementById('calc-display').textContent = calcStr } catch (e) { document.getElementById('calc-display').textContent = 'Erro'; calcStr = '0' } }
 
     /* ── KEYBOARD ── */
     document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeNovaMesa(); closeAddItem(); closePayModal(); document.getElementById('modal-calc').classList.remove('open') } })
