@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Buteco do Tattoo - Acesso Central</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#1a2a3a;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 20px;gap:20px}
+h1{font-size:26px;font-weight:900;text-align:center;}
+.sub{font-size:14px;opacity:.8;margin-top:4px;text-align:center;}
+.hub-container{display:flex;flex-direction:column;gap:15px;width:100%;max-width:320px;margin-top:20px;}
+.btn-hub{background:#0077b6;color:#fff;text-decoration:none;padding:16px;border-radius:12px;text-align:center;font-size:18px;font-weight:bold;transition:transform .2s, background .2s;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+.btn-hub:hover{background:#005f96; transform:translateY(-2px);}
+.btn-hub.comanda{background:#27ae60;}
+.btn-hub.comanda:hover{background:#219653;}
+.btn-hub.dashboard{background:#f39c12;}
+.btn-hub.dashboard:hover{background:#d68910;}
+
+.qr-section{background:#fff;border-radius:16px;padding:24px;text-align:center;color:#1a2a3a;margin-top:10px;width:100%;max-width:320px; box-shadow:0 6px 16px rgba(0,0,0,0.3);}
+.qr-section h3{font-size:16px;margin-bottom:8px;font-weight:800; color:#1a2a3a;}
+.qr-section p.qr-desc{font-size:13px;color:#4a6980;margin-bottom:15px; line-height:1.4;}
+.qr-section img{border-radius:8px;margin-bottom:12px;margin: 0 auto;display:block;}
+.qr-section p.dynamic-url{font-size:12px;color:#0077b6;word-break:break-all;margin-top:4px;font-weight:600;}
+.note{font-size:12px;opacity:.6;max-width:500px;text-align:center;line-height:1.6;margin-top:20px;}
+</style>
+</head>
+<body>
+<div>
+  <h1>Buteco do Tattoo</h1>
+  <div class="sub">Selecione o sistema que deseja acessar</div>
+</div>
+
+<div class="hub-container">
+  <a href="cardapio.html" class="btn-hub">📋 Cardápio</a>
+  <a href="comanda.html" class="btn-hub comanda">🧾 Comanda</a>
+  <a href="dashboard.html" class="btn-hub dashboard">📊 Dashboard</a>
+</div>
+
+<div class="qr-section">
+  <h3>🔗 QR Code Integrado</h3>
+  <p class="qr-desc">Escaneie este código para abrir esta mesma página no celular com os acessos aos 3 sistemas.</p>
+  <img id="dynamic-qr" src="" width="200" height="200" alt="QR Code Central" style="display:none;"/>
+  <p id="dynamic-url" class="dynamic-url">Carregando link...</p>
+</div>
+
+<div class="note">
+  Este painel gera o QR Code automaticamente para a URL em que está hospedado.<br>
+  Excelente para demonstração no GitHub Pages!
+</div>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    // Pega a URL atual onde o site está rodando. 
+    // Remove "index.html" ou o nome do arquivo se quiser focar apenas no diretório.
+    let currentUrl = window.location.href;
+    
+    // Atualiza o texto do link na tela
+    document.getElementById('dynamic-url').textContent = currentUrl;
+    
+    // Gera o QR Code apontando para a URL atual dinamicamente
+    const qrImg = document.getElementById('dynamic-qr');
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
+    qrImg.style.display = 'block';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Buteco do Tattoo — Cardápio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --blue:#0077b6;--blue2:#00b4d8;--bluelight:#e0f4ff;
+  --yellow:#f5c518;--dark:#1a2a3a;--bg:#f0f8ff;
+  --card:#fff;--text:#1a2a3a;--sub:#4a6980;
+  --topbar:36px;--navbar:58px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden}
+::-webkit-scrollbar{width:5px;height:4px}
+::-webkit-scrollbar-track{background:#ddf0fa}
+::-webkit-scrollbar-thumb{background:var(--blue);border-radius:3px}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:110;
+  height:var(--topbar);
+  background:var(--blue);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;
+  gap:10px;
+}
+.topbar-left{font-size:11px;color:rgba(255,255,255,.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:10px}
+.topbar-left .weather-info{display:flex;align-items:center;gap:8px}
+.topbar-left .weather-temp{font-weight:700;color:#fff}
+.topbar-left .tide-info{display:flex;align-items:center;gap:4px;font-size:10px;opacity:.9}
+.topbar-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.lang-btn{
+  background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:5px;padding:3px 8px;
+  font-size:10px;font-weight:700;cursor:pointer;
+  color:rgba(255,255,255,.8);
+  transition:all .2s;font-family:inherit;
+  letter-spacing:.5px;
+}
+.lang-btn:hover{background:rgba(255,255,255,.28);color:#fff}
+.lang-btn.active{background:#fff;color:var(--blue);border-color:#fff}
+
+/* ── NAVBAR ── */
+nav{
+  position:fixed;top:var(--topbar);left:0;right:0;z-index:100;
+  height:var(--navbar);padding:0 16px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(14px);
+  border-bottom:1.5px solid #d4eeff;
+  transition:box-shadow .3s;
+}
+nav.scrolled{box-shadow:0 2px 14px #0077b618}
+.nav-logo{display:flex;align-items:center;gap:9px;min-width:0;flex:1}
+.nav-logo-icon{
+  width:36px;height:36px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;
+}
+.nav-logo-info{min-width:0}
+.nav-logo-name{
+  font-size:15px;font-weight:900;color:var(--blue);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  line-height:1.15;
+}
+.nav-logo-sub{font-size:9px;color:var(--sub);font-weight:500;letter-spacing:.8px;text-transform:uppercase}
+.store-status{font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;letter-spacing:.3px}
+.store-status.aberto{background:#e8faf0;color:#27ae60;border:1px solid #a8e6c3}
+.store-status.fechado{background:#ffeaea;color:#e74c3c;border:1px solid #f5b7b1}
+.nav-actions{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.nav-btn{
+  background:none;border:none;color:var(--blue);cursor:pointer;
+  padding:7px;border-radius:50%;transition:background .2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.nav-btn:hover{background:#e0f4ff}
+.nav-btn svg{width:20px;height:20px;stroke:var(--blue);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* search */
+.search-wrap{display:flex;align-items:center;gap:3px}
+#search-input{
+  background:#f0f8ff;border:1.5px solid #b8dcf0;
+  color:var(--text);padding:6px 12px;border-radius:18px;
+  font-size:12px;width:0;opacity:0;
+  transition:width .3s,opacity .3s;pointer-events:none;font-family:inherit;
+}
+#search-input.open{width:130px;opacity:1;pointer-events:all}
+@media(min-width:480px){#search-input.open{width:180px}}
+#search-input:focus{outline:none;border-color:var(--blue)}
+#search-input::placeholder{color:#aac}
+
+/* cart badge */
+.cart-btn-wrap{position:relative}
+.cart-badge{
+  position:absolute;top:-4px;right:-4px;
+  background:var(--blue);color:#fff;font-size:10px;font-weight:900;
+  border-radius:50%;width:17px;height:17px;
+  display:flex;align-items:center;justify-content:center;
+  animation:popIn .25s ease;
+}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+
+/* ── HERO SLIDESHOW ── */
+.hero{
+  position:relative;width:100%;
+  height:calc(100vh - var(--topbar) - var(--navbar));
+  min-height:400px;max-height:700px;
+  overflow:hidden;
+  margin-top:calc(var(--topbar) + var(--navbar));
+}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease;pointer-events:none}
+.slide.active{opacity:1;pointer-events:all}
+.slide img{width:100%;height:100%;object-fit:cover;object-position:center}
+.hero-grad{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,35,70,.92) 0%,rgba(0,55,95,.55) 55%,transparent 100%)}
+.hero-grad2{position:absolute;inset:0;background:linear-gradient(to top,var(--bg) 0%,transparent 45%)}
+.hero-content{
+  position:absolute;bottom:60px;left:0;right:0;
+  padding:0 20px;max-width:520px;
+}
+@media(min-width:600px){
+  .hero-content{bottom:auto;top:50%;transform:translateY(-50%);padding:0 48px}
+}
+.hero-badge{
+  display:inline-block;background:var(--yellow);color:#1a2a3a;
+  font-size:10px;font-weight:800;padding:4px 11px;border-radius:20px;
+  letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px;
+}
+.hero-title{
+  font-size:clamp(22px,5.5vw,46px);font-weight:900;line-height:1.1;
+  margin-bottom:8px;color:#fff;text-shadow:0 2px 16px #0004;
+}
+.hero-desc{font-size:13px;color:#cce8ff;line-height:1.6;margin-bottom:13px;max-width:380px}
+.hero-price{font-size:22px;font-weight:900;color:var(--yellow);margin-bottom:13px}
+.hero-btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn-primary{
+  background:var(--blue);color:#fff;border:none;
+  padding:10px 16px;border-radius:8px;font-weight:700;font-size:12px;
+  cursor:pointer;display:flex;align-items:center;gap:6px;
+  transition:background .2s;font-family:inherit;
+}
+.btn-primary:hover{background:#005f96}
+.btn-secondary{
+  background:rgba(255,255,255,.15);color:#fff;
+  border:1.5px solid rgba(255,255,255,.35);
+  padding:10px 16px;border-radius:8px;font-weight:700;font-size:12px;
+  cursor:pointer;display:flex;align-items:center;gap:6px;
+  backdrop-filter:blur(6px);transition:all .2s;font-family:inherit;
+}
+.btn-secondary:hover{background:rgba(255,255,255,.25)}
+.btn-primary svg,.btn-secondary svg{
+  width:14px;height:14px;stroke:currentColor;fill:none;
+  stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;
+}
+
+/* slide dots — discretos */
+.slide-dots{
+  position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+  display:flex;gap:5px;z-index:10;
+}
+.dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.35);border:none;cursor:pointer;
+  transition:all .35s;padding:0;
+}
+.dot:hover{background:rgba(255,255,255,.65)}
+.dot.active{background:rgba(255,255,255,.9);width:18px;border-radius:3px}
+
+/* slide arrows — sutis */
+.slide-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  z-index:10;background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  color:#fff;width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .25s;
+  opacity:0;
+}
+.hero:hover .slide-arrow{opacity:1}
+.slide-arrow:hover{background:rgba(255,255,255,.28)}
+.slide-arrow svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.arrow-prev{left:10px}
+.arrow-next{right:10px}
+
+/* ── WAVE ── */
+.wave-divider{display:block;width:100%;margin-top:-3px;line-height:0}
+.wave-divider svg{display:block;width:100%}
+
+/* ── CATEGORY NAV ── */
+.cat-nav{
+  position:sticky;top:calc(var(--topbar) + var(--navbar));z-index:90;
+  background:rgba(255,255,255,.96);backdrop-filter:blur(12px);
+  border-bottom:1.5px solid #d4eeff;
+  padding:8px 16px;
+  display:flex;gap:6px;overflow-x:auto;
+  scrollbar-width:none;
+}
+.cat-nav::-webkit-scrollbar{display:none}
+.cat-nav-btn{
+  flex-shrink:0;padding:6px 14px;border-radius:20px;
+  font-size:11px;font-weight:700;cursor:pointer;
+  background:var(--bluelight);color:var(--blue);
+  border:1.5px solid #b8dcf0;transition:all .2s;
+  font-family:inherit;display:flex;align-items:center;gap:4px;
+  white-space:nowrap;
+}
+.cat-nav-btn:hover{transform:scale(1.03)}
+.cat-nav-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* ── CATEGORIAS ── */
+.categories{padding:6px 0 40px;background:var(--bg)}
+.cat-section{margin-bottom:28px}
+.cat-header{
+  display:flex;align-items:center;gap:7px;
+  padding:0 16px;margin-bottom:10px;
+}
+@media(min-width:600px){.cat-header{padding:0 24px}}
+.cat-title{font-size:16px;font-weight:800;color:var(--dark)}
+.cat-count{font-size:11px;color:var(--sub);font-weight:500}
+.carousel{
+  display:flex;gap:11px;
+  padding:3px 16px 10px;
+  overflow-x:auto;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;scrollbar-color:var(--blue2) #ddf0fa;
+}
+@media(min-width:600px){.carousel{padding:3px 24px 10px}}
+.carousel::-webkit-scrollbar{height:3px}
+
+/* ── CARDS ── */
+.menu-card{
+  flex-shrink:0;
+  width:clamp(150px,42vw,175px);
+  background:var(--card);border-radius:11px;overflow:hidden;
+  cursor:pointer;scroll-snap-align:start;
+  transition:transform .3s,box-shadow .3s;
+  box-shadow:0 2px 8px #0077b612;border:1px solid #d4eeff;
+}
+@media(min-width:600px){.menu-card{width:172px}}
+.menu-card:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 8px 22px #0077b628}
+.card-img-wrap{position:relative;height:100px;overflow:hidden;background:#ddf0fa}
+@media(min-width:600px){.card-img-wrap{height:108px}}
+.card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.menu-card:hover .card-img-wrap img{transform:scale(1.07)}
+.card-badge{position:absolute;top:6px;left:6px;font-size:9px;font-weight:800;padding:2px 7px;border-radius:18px;color:#fff}
+.badge-Destaque{background:var(--blue)}
+.badge-Novo{background:#27ae60}
+.badge-Especial{background:#e67e22}
+.card-age{position:absolute;top:6px;right:6px;background:#0007;color:#fff;font-size:9px;padding:2px 5px;border-radius:9px}
+.card-body{padding:9px}
+.card-name{font-size:12px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--dark)}
+.card-desc{font-size:10px;color:var(--sub);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:5px}
+.card-serves{font-size:10px;color:#88a8c0;margin-bottom:5px}
+.card-footer{display:flex;align-items:center;justify-content:space-between;gap:4px}
+.card-price{font-size:12px;font-weight:800;color:var(--blue)}
+.card-consultar{font-size:9px;font-weight:700;color:var(--blue2);background:#e0f4ff;padding:2px 6px;border-radius:9px}
+.card-add{
+  background:var(--blue);border:none;color:#fff;
+  width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
+}
+.card-add:hover{background:#005f96}
+.card-add svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round}
+
+/* ── BUSCA HEADER ── */
+.search-header{padding:calc(var(--topbar) + var(--navbar) + 14px) 16px 0;font-size:12px;color:var(--sub)}
+.search-header span{color:var(--blue);font-weight:700}
+.no-result{text-align:center;padding:60px 20px;color:var(--sub)}
+.no-result .icon{font-size:44px;margin-bottom:10px}
+
+/* ── MODAL ── */
+.modal-bg{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:#00000072;backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;padding:14px;
+}
+.modal-bg.open{display:flex}
+.modal{
+  background:#fff;border-radius:14px;overflow:hidden;
+  width:100%;max-width:430px;max-height:90vh;overflow-y:auto;
+  animation:slideUp .22s ease;box-shadow:0 20px 60px #0077b640;
+}
+@keyframes slideUp{from{transform:translateY(28px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-img{position:relative;height:190px;background:#ddf0fa}
+@media(min-width:480px){.modal-img{height:210px}}
+.modal-img img{width:100%;height:100%;object-fit:cover}
+.modal-img-grad{position:absolute;inset:0;background:linear-gradient(to top,#fff 0%,transparent 55%)}
+.modal-close{
+  position:absolute;top:10px;right:10px;background:#fff;border:none;
+  color:var(--blue);width:32px;height:32px;border-radius:50%;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px #0003;
+}
+.modal-close svg{width:15px;height:15px;stroke:var(--blue);fill:none;stroke-width:2.5;stroke-linecap:round}
+.modal-body{padding:16px}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:7px}
+.modal-name{font-size:18px;font-weight:900;color:var(--dark);line-height:1.2}
+.modal-price{font-size:18px;font-weight:900;color:var(--blue);white-space:nowrap}
+.modal-consultar{font-size:13px;font-weight:700;color:var(--blue2)}
+.modal-desc{font-size:12px;color:var(--sub);line-height:1.6;margin-bottom:12px}
+.modal-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.modal-tag{background:var(--bluelight);border-radius:18px;padding:5px 10px;font-size:11px;color:var(--blue);display:flex;align-items:center;gap:4px;font-weight:600}
+.modal-add-btn{
+  width:100%;background:var(--blue);color:#fff;border:none;
+  padding:13px;border-radius:9px;font-size:14px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  gap:7px;transition:background .2s;font-family:inherit;
+}
+.modal-add-btn:hover{background:#005f96}
+.modal-add-btn svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── CART SIDEBAR ── */
+.cart-bg{display:none;position:fixed;inset:0;z-index:300;background:#00000055;backdrop-filter:blur(3px)}
+.cart-bg.open{display:block}
+.cart-sidebar{
+  position:fixed;top:0;right:0;bottom:0;
+  width:100%;max-width:380px;
+  background:#fff;z-index:301;
+  display:flex;flex-direction:column;
+  animation:slideRight .28s ease;
+  box-shadow:-4px 0 28px #0077b622;
+}
+@keyframes slideRight{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.cart-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-bottom:1.5px solid #d4eeff;
+  background:linear-gradient(135deg,#e0f4ff,#f4faff);
+  flex-shrink:0;
+}
+.cart-head h2{font-size:16px;font-weight:900;color:var(--dark)}
+.cart-head p{font-size:10px;color:var(--sub);margin-top:2px}
+.cart-close{background:none;border:none;color:var(--blue);cursor:pointer;padding:6px;border-radius:50%;transition:background .2s}
+.cart-close:hover{background:#e0f4ff}
+.cart-close svg{width:18px;height:18px;stroke:var(--blue);fill:none;stroke-width:2.2;stroke-linecap:round}
+.cart-items{flex:1;overflow-y:auto;padding:11px}
+.cart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--sub);text-align:center}
+.cart-empty .icon{font-size:44px;margin-bottom:10px}
+.cart-item{
+  display:flex;gap:9px;background:var(--bluelight);
+  border-radius:9px;padding:9px;margin-bottom:7px;
+  border:1px solid #c8e8f8;
+}
+.cart-item-info{flex:1;min-width:0}
+.cart-item-name{font-size:12px;font-weight:700;margin-bottom:2px;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cart-item-price{font-size:12px;font-weight:800;color:var(--blue)}
+.cart-item-controls{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.qty-btn{
+  background:#fff;border:1.5px solid #b8dcf0;color:var(--blue);
+  width:25px;height:25px;border-radius:50%;cursor:pointer;
+  font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.qty-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+.qty-val{font-size:12px;font-weight:700;width:15px;text-align:center;color:var(--dark)}
+.cart-del{
+  background:#fff0f0;border:none;color:#e55;
+  width:25px;height:25px;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s;margin-left:2px;
+}
+.cart-del:hover{background:#ffd0d0}
+.cart-del svg{width:12px;height:12px;stroke:#e55;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* cart footer */
+.cart-footer{padding:11px 13px;border-top:1.5px solid #d4eeff;background:#f8fcff;flex-shrink:0}
+.cart-form{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.cart-form-row{display:flex;gap:7px}
+.cart-field{display:flex;flex-direction:column;gap:2px;flex:1}
+.cart-field label{font-size:10px;font-weight:700;color:var(--sub)}
+.cart-field input,.cart-field textarea{
+  background:#f0f8ff;border:1.5px solid #b8dcf0;
+  color:var(--text);padding:7px 9px;border-radius:7px;
+  font-size:12px;font-family:inherit;transition:border-color .2s;width:100%;
+}
+.cart-field input:focus,.cart-field textarea:focus{outline:none;border-color:var(--blue)}
+.cart-field input.error{border-color:#e55;background:#fff5f5}
+.cart-field textarea{resize:none;height:48px}
+.obs-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.obs-tag{
+  background:#e0f4ff;border:1.5px solid #b8dcf0;color:var(--blue);
+  font-size:10px;font-weight:600;padding:3px 8px;border-radius:18px;
+  cursor:pointer;transition:all .2s;font-family:inherit;
+}
+.obs-tag:hover,.obs-tag.sel{background:var(--blue);color:#fff;border-color:var(--blue)}
+.field-error{font-size:10px;color:#e55;min-height:14px}
+.cart-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.cart-total-label{color:var(--sub);font-size:12px;font-weight:600}
+.cart-total-val{font-size:20px;font-weight:900;color:var(--blue)}
+.btn-enviar{
+  width:100%;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;
+  padding:13px;border-radius:10px;font-size:13px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  gap:7px;transition:background .2s;font-family:inherit;margin-bottom:5px;
+}
+.btn-enviar:hover{background:#005f96}
+.btn-enviar svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.toast-ok{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#27ae60;color:#fff;padding:14px 28px;border-radius:12px;
+  font-size:13px;font-weight:700;z-index:9999;box-shadow:0 6px 24px rgba(0,0,0,.25);
+  transition:transform .4s ease;font-family:inherit;
+}
+.toast-ok.show{transform:translateX(-50%) translateY(0)}
+.btn-clear{width:100%;background:none;border:none;color:#aaa;font-size:11px;padding:4px;cursor:pointer;transition:color .2s;font-family:inherit}
+.btn-clear:hover{color:#e55}
+
+/* ── FOOTER ── */
+footer{background:#e0f4ff;border-top:2px solid #c8eaf8;padding:24px 20px;text-align:center;color:var(--sub);font-size:12px;line-height:2}
+footer strong{color:var(--blue)}
+.footer-hours{background:#fff;border-radius:10px;padding:11px 16px;margin:10px auto;max-width:280px;border:1px solid #c8eaf8;text-align:center}
+.footer-hours h3{font-size:12px;font-weight:800;color:var(--dark);margin-bottom:5px}
+.footer-hours p{font-size:12px;color:var(--sub)}
+
+/* ── UTILS ── */
+[data-i]{} /* semântico */
+</style>
+</head>
+<body>
+
+<!-- TOPBAR: clima e maré -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="weather-info">
+      <span id="weather-icon">☀️</span>
+      <span class="weather-temp" id="weather-temp">--°C</span>
+    </div>
+    <div class="tide-info">
+      <span>🌊</span>
+      <span id="tide-status">Maré: --</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="lang-btn active" onclick="setLang('pt')">PT</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('es')">ES</button>
+  </div>
+</div>
+
+<!-- NAVBAR: logo + busca + carrinho -->
+<nav id="navbar">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">🌴</div>
+    <div class="nav-logo-info">
+      <div class="nav-logo-name">Buteco do Tattoo</div>
+      <div class="nav-logo-sub" id="nav-sub">Cardápio Digital</div>
+    </div>
+    <span class="store-status" id="store-status">🔓 Aberto</span>
+  </div>
+  <div class="nav-actions">
+    <div class="search-wrap">
+      <input id="search-input" type="text" placeholder="Buscar..."/>
+      <button class="nav-btn" id="search-btn" aria-label="Buscar">
+        <svg id="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+    <div class="cart-btn-wrap">
+      <button class="nav-btn" id="cart-btn" aria-label="Carrinho">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      </button>
+      <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO SLIDESHOW -->
+<section class="hero" id="hero-section">
+  <!-- Slide 1 -->
+  <div class="slide active">
+    <img src="https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=1400&q=80" alt="Moqueca de Camarão"/>
+    <div class="hero-grad"></div><div class="hero-grad2"></div>
+    <div class="hero-content">
+      <div class="hero-badge">⭐ Destaque da Casa</div>
+      <h1 class="hero-title">Moqueca<br/>de Camarão</h1>
+      <p class="hero-desc">Arroz, farofa, feijão fradinho, salada e pirão.</p>
+      <div class="hero-price">R$ 139,90</div>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="addToCartById(31)"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span data-i="addOrder">Adicionar ao Pedido</span></button>
+        <button class="btn-secondary" onclick="openModal(31)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span data-i="seeDetails">Ver Detalhes</span></button>
+      </div>
+    </div>
+  </div>
+  <!-- Slide 2 -->
+  <div class="slide">
+    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1400&q=80" alt="Mariscada"/>
+    <div class="hero-grad"></div><div class="hero-grad2"></div>
+    <div class="hero-content">
+      <div class="hero-badge">⭐ Especial</div>
+      <h1 class="hero-title">Mariscada</h1>
+      <p class="hero-desc">Arroz, farofa, feijão fradinho, salada e pirão.</p>
+      <div class="hero-price">R$ 162,00</div>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="addToCartById(34)"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span data-i="addOrder">Adicionar ao Pedido</span></button>
+        <button class="btn-secondary" onclick="openModal(34)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span data-i="seeDetails">Ver Detalhes</span></button>
+      </div>
+    </div>
+  </div>
+  <!-- Slide 3 -->
+  <div class="slide">
+    <img src="https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=1400&q=80" alt="Lagosta"/>
+    <div class="hero-grad"></div><div class="hero-grad2"></div>
+    <div class="hero-content">
+      <div class="hero-badge">👑 Premium</div>
+      <h1 class="hero-title">Lagosta 1kg</h1>
+      <p class="hero-desc">Arroz, farofa e salada. O luxo do mar na sua mesa.</p>
+      <div class="hero-price">R$ 179,00</div>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="addToCartById(35)"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span data-i="addOrder">Adicionar ao Pedido</span></button>
+        <button class="btn-secondary" onclick="openModal(35)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span data-i="seeDetails">Ver Detalhes</span></button>
+      </div>
+    </div>
+  </div>
+  <!-- Slide 4 -->
+  <div class="slide">
+    <img src="https://images.unsplash.com/photo-1559742811-822873691df8?w=1400&q=80" alt="Camarão Alho e Óleo"/>
+    <div class="hero-grad"></div><div class="hero-grad2"></div>
+    <div class="hero-content">
+      <div class="hero-badge">🔥 Destaque</div>
+      <h1 class="hero-title">Camarão<br/>Alho e Óleo</h1>
+      <p class="hero-desc">Camarão suculento refogado no alho e óleo.</p>
+      <div class="hero-price">R$ 62,00</div>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="addToCartById(7)"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span data-i="addOrder">Adicionar ao Pedido</span></button>
+        <button class="btn-secondary" onclick="openModal(7)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span data-i="seeDetails">Ver Detalhes</span></button>
+      </div>
+    </div>
+  </div>
+  <!-- Slide 5 -->
+  <div class="slide">
+    <img src="https://images.unsplash.com/photo-1547592180-85f173990554?w=1400&q=80" alt="Moqueca de Peixe"/>
+    <div class="hero-grad"></div><div class="hero-grad2"></div>
+    <div class="hero-content">
+      <div class="hero-badge">🐟 Fresco do Dia</div>
+      <h1 class="hero-title">Moqueca<br/>de Peixe</h1>
+      <p class="hero-desc">Arroz, farofa, feijão fradinho, salada e pirão.</p>
+      <div class="hero-price">R$ 129,90</div>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="addToCartById(30)"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span data-i="addOrder">Adicionar ao Pedido</span></button>
+        <button class="btn-secondary" onclick="openModal(30)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span data-i="seeDetails">Ver Detalhes</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dots & Arrows -->
+  <div class="slide-dots" id="slide-dots"></div>
+  <button class="slide-arrow arrow-prev" onclick="goSlide(si-1)" aria-label="Anterior">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <button class="slide-arrow arrow-next" onclick="goSlide(si+1)" aria-label="Próximo">
+    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</section>
+
+<div class="wave-divider">
+  <svg viewBox="0 0 1440 55" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="36">
+    <path d="M0,28 C360,56 1080,0 1440,28 L1440,56 L0,56 Z" fill="#f0f8ff"/>
+  </svg>
+</div>
+
+<div class="cat-nav" id="cat-nav"></div>
+<div id="search-header-wrap"></div>
+<div id="main-content"></div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-img">
+      <img id="modal-img" src="" alt=""/>
+      <div class="modal-img-grad"></div>
+      <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <div id="modal-badge-wrap"></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-head"><div class="modal-name" id="modal-name"></div><div id="modal-price-wrap"></div></div>
+      <div class="modal-desc" id="modal-desc"></div>
+      <div class="modal-tags" id="modal-tags"></div>
+      <button class="modal-add-btn" id="modal-add-btn">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span data-i="addOrder">Adicionar ao Pedido</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CART SIDEBAR -->
+<div class="cart-bg" id="cart-bg" onclick="toggleCart()"></div>
+<div class="cart-sidebar" id="cart-sidebar" style="display:none">
+  <div class="cart-head">
+    <div><h2>🛒 <span data-i="myOrder">Meu Pedido</span></h2><p id="cart-count-label">0 itens</p></div>
+    <button class="cart-close" onclick="toggleCart()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="cart-items" id="cart-items"></div>
+  <div class="cart-footer" id="cart-footer" style="display:none">
+    <div class="cart-form">
+      <div class="cart-form-row">
+        <div class="cart-field">
+          <label data-i="nameLabel">👤 Nome *</label>
+          <input id="field-name" type="text" placeholder="Seu nome" maxlength="40"/>
+          <div class="field-error" id="err-name"></div>
+        </div>
+        <div class="cart-field" style="max-width:82px">
+          <label data-i="tableLabel">🪑 Mesa *</label>
+          <input id="field-table" type="text" placeholder="Nº" maxlength="6"/>
+          <div class="field-error" id="err-table"></div>
+        </div>
+      </div>
+      <div class="cart-field">
+        <label data-i="obsLabel">📝 Observações</label>
+        <textarea id="field-obs" placeholder="Alguma observação..." style="margin-top:4px"></textarea>
+      </div>
+    </div>
+    <div class="cart-total-row">
+      <span class="cart-total-label" data-i="total">Total</span>
+      <span class="cart-total-val" id="cart-total">R$ 0,00</span>
+    </div>
+    <button class="btn-enviar" onclick="enviarPedido()">
+      <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <span data-i="sendOrder">Fazer Pedido</span>
+    </button>
+    <button class="btn-clear" onclick="clearCart()" data-i="clearOrder">Limpar pedido</button>
+  </div>
+</div>
+
+<footer>
+  🌴 <strong>Buteco do Tattoo</strong><br/>
+  📍 Praia de Stella Mares, Salvador — BA<br/>
+  📱 (71) 99172-8256
+  <div class="footer-hours">
+    <h3>🕐 <span data-i="hoursTitle">Horário de Funcionamento</span></h3>
+    <!-- ✏️ Edite o horário aqui -->
+    <p id="hours-text">Seg a Dom: 09h às 22h</p>
+  </div>
+  🔞 <span data-i="ageWarning">Bebidas alcoólicas proibidas para menores de 18 anos</span>
+</footer>
+
+<script>
+// ── STORE STATUS ──
+(function(){
+  const el=document.getElementById('store-status')
+  if(!el)return
+  const s=localStorage.getItem('btStoreStatus')||'aberto'
+  if(s==='fechado'){el.textContent='🔒 Fechado';el.className='store-status fechado'}
+  else{el.textContent='🔓 Aberto';el.className='store-status aberto'}
+  window.addEventListener('storage',function(){
+    const st=localStorage.getItem('btStoreStatus')||'aberto'
+    if(st==='fechado'){el.textContent='🔒 Fechado';el.className='store-status fechado'}
+    else{el.textContent='🔓 Aberto';el.className='store-status aberto'}
+  })
+})();
+const WHATSAPP='5571991728256', BAR_NAME='Buteco do Tattoo'
+
+/* ── i18n ── */
+const i18n={
+  pt:{
+    addOrder:'Adicionar ao Pedido',seeDetails:'Ver Detalhes',myOrder:'Meu Pedido',
+    nameLabel:'👤 Nome *',tableLabel:'🪑 Mesa *',obsLabel:'📝 Observações',
+    namePH:'Seu nome',tablePH:'Nº',obsPH:'Outras observações...',
+    total:'Total',sendOrder:'Fazer Pedido',clearOrder:'Limpar pedido',
+    hoursTitle:'Horário de Funcionamento',
+    ageWarning:'Bebidas alcoólicas proibidas para menores de 18 anos',
+    errName:'Informe seu nome',errTable:'Informe o nº da mesa',
+    navSub:'Cardápio Digital',searchPH:'Buscar...',consultar:'A consultar',
+    items:'itens',item:'item',
+    obsTags:['Sem cebola','Sem pimenta','Bem passado','Mal passado','Sem sal','Sem coentro','Para viagem','Alergia frutos do mar'],
+    cats:{entradas:'Entradas & Petiscos',refeicoes:'Refeições',extras:'Porções Extras',bebidas:'Bebidas',cervejas:'Cervejas',drinks:'Drinks Especiais',doses:'Doses'}
+  },
+  en:{
+    addOrder:'Add to Order',seeDetails:'See Details',myOrder:'My Order',
+    nameLabel:'👤 Name *',tableLabel:'🪑 Table *',obsLabel:'📝 Notes',
+    namePH:'Your name',tablePH:'No.',obsPH:'Other notes...',
+    total:'Total',sendOrder:'Place Order',clearOrder:'Clear order',
+    hoursTitle:'Opening Hours',ageWarning:'Alcohol prohibited for under 18s',
+    errName:'Enter your name',errTable:'Enter table number',
+    navSub:'Digital Menu',searchPH:'Search...',consultar:'Ask staff',
+    items:'items',item:'item',
+    obsTags:['No onion','No pepper','Well done','Rare','No salt','No coriander','Takeaway','Seafood allergy'],
+    cats:{entradas:'Starters & Snacks',refeicoes:'Meals',extras:'Side Orders',bebidas:'Drinks',cervejas:'Beer',drinks:'Cocktails',doses:'Shots'}
+  },
+  es:{
+    addOrder:'Agregar al Pedido',seeDetails:'Ver Detalles',myOrder:'Mi Pedido',
+    nameLabel:'👤 Nombre *',tableLabel:'🪑 Mesa *',obsLabel:'📝 Observaciones',
+    namePH:'Tu nombre',tablePH:'Nº',obsPH:'Otras observaciones...',
+    total:'Total',sendOrder:'Hacer Pedido',clearOrder:'Limpiar pedido',
+    hoursTitle:'Horario de Atención',ageWarning:'Bebidas alcohólicas prohibidas menores de 18 años',
+    errName:'Ingresa tu nombre',errTable:'Ingresa el nº de mesa',
+    navSub:'Menú Digital',searchPH:'Buscar...',consultar:'Consultar',
+    items:'ítems',item:'ítem',
+    obsTags:['Sin cebolla','Sin pimienta','Bien cocido','Poco hecho','Sin sal','Sin cilantro','Para llevar','Alergia mariscos'],
+    cats:{entradas:'Entradas & Snacks',refeicoes:'Comidas',extras:'Porciones Extra',bebidas:'Bebidas',cervejas:'Cervezas',drinks:'Cócteles',doses:'Dosis'}
+  }
+}
+let lang='pt'
+const t=k=>i18n[lang][k]??i18n.pt[k]
+
+function setLang(l){
+  lang=l
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()))
+  applyTr(); renderCategories(currentItems()); if(cartOpen) renderCart()
+}
+function applyTr(){
+  document.querySelectorAll('[data-i]').forEach(el=>{const k=el.dataset.i;if(i18n[lang][k])el.textContent=i18n[lang][k]})
+  document.getElementById('nav-sub').textContent=t('navSub')
+  document.getElementById('search-input').placeholder=t('searchPH')
+  const fn=document.getElementById('field-name'),ft=document.getElementById('field-table'),fo=document.getElementById('field-obs')
+  if(fn)fn.placeholder=t('namePH'); if(ft)ft.placeholder=t('tablePH'); if(fo)fo.placeholder=t('obsPH')
+}
+/* obs tags removidas */
+
+/* ── DADOS ── */
+const menu=[
+  {id:1,name:'Carne do Sol c/ Farofa e Salada',desc:'Carne do sol com farofa e salada',price:48,img:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&q=80',cat:'entradas'},
+  {id:2,name:'Carne do Sol c/ Fritas ou Aipim',desc:'Carne do sol com fritas ou aipim',price:58,img:'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80',cat:'entradas'},
+  {id:3,name:'Filé c/ Fritas',desc:'Filé com fritas crocantes',price:69,img:'https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=500&q=80',cat:'entradas'},
+  {id:4,name:'Calabresa Acebolada',desc:'Calabresa acebolada estilo petisco',price:45,img:'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=500&q=80',cat:'entradas'},
+  {id:5,name:'Calabresa c/ Fritas ou Aipim',desc:'Calabresa acebolada com fritas ou aipim',price:49,img:'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=500&q=80',cat:'entradas'},
+  {id:6,name:'Porção de Batata ou Aipim',desc:'Fritas ou aipim crocante',price:27,img:'https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=500&q=80',cat:'entradas'},
+  {id:7,name:'Camarão Alho e Óleo',desc:'Camarão suculento no alho e óleo',price:62,img:'https://images.unsplash.com/photo-1559742811-822873691df8?w=500&q=80',cat:'entradas',badge:'Destaque'},
+  {id:8,name:'Camarão à Milanesa',desc:'Camarão empanado crocante',price:59,img:'https://images.unsplash.com/photo-1559742811-822873691df8?w=500&q=80',cat:'entradas'},
+  {id:9,name:'Camarão sem Casca c/ Farofa e Salada',desc:'Camarão sem casca com farofa e salada',price:72,img:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80',cat:'entradas',badge:'Especial'},
+  {id:10,name:'Casquinha de Siri',desc:'Casquinha de siri artesanal',price:32,img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&q=80',cat:'entradas'},
+  {id:11,name:'Isca de Peixe c/ Fritas ou Aipim',desc:'Iscas de peixe fritas com fritas ou aipim',price:58,img:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80',cat:'entradas'},
+  {id:12,name:'Isca de Peixe c/ Farofa e Salada',desc:'Iscas de peixe com farofa e salada',price:49,img:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80',cat:'entradas'},
+  {id:13,name:'Isca de Frango c/ Fritas ou Aipim',desc:'Iscas de frango com fritas ou aipim',price:52,img:'https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=80',cat:'entradas'},
+  {id:14,name:'Isca de Frango c/ Farofa e Salada',desc:'Iscas de frango com farofa e salada',price:49,img:'https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=80',cat:'entradas'},
+  {id:15,name:'Agulhinha c/ Farofa e Salada',desc:'Agulhinha frita com farofa e salada',price:45,img:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80',cat:'entradas'},
+  {id:16,name:'Pitinga c/ Farofa e Salada',desc:'Pitinga frita com farofa e salada',price:45,img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&q=80',cat:'entradas'},
+  {id:17,name:'Lambreta Grande (12 und)',desc:'12 unidades de lambreta / mexilhão',price:32,img:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80',cat:'entradas',serves:'2-3 pessoas'},
+  {id:18,name:'Lambreta Dobrada',desc:'Porção dobrada de lambreta / mexilhão',price:46,img:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80',cat:'entradas'},
+  {id:19,name:'Caranguejo (unidade)',desc:'Caranguejo fresco — unidade',price:10,img:'https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=500&q=80',cat:'entradas'},
+  {id:20,name:'Bolinho',desc:'Bolinho crocante — scone',price:33,img:'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=500&q=80',cat:'entradas'},
+  {id:21,name:'Caldo (Camarão, Sururu, Polvo...)',desc:'Caldo quente do mar com ingredientes frescos',price:28,img:'https://images.unsplash.com/photo-1547592180-85f173990554?w=500&q=80',cat:'entradas'},
+  {id:22,name:'Frango a Passarinho 1kg',desc:'1kg de frango a passarinho crocante',price:55,img:'https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=80',cat:'entradas',serves:'3-4 pessoas'},
+  {id:23,name:'Frango c/ Batata ou Aipim',desc:'Frango a passarinho com batata frita ou aipim',price:55,img:'https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=80',cat:'entradas'},
+  {id:24,name:'Peixe em Posta',desc:'Arroz, farofa, feijão fradinho, salada e fritas',price:107,img:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80',cat:'refeicoes',badge:'Destaque',serves:'2 pessoas'},
+  {id:25,name:'Peixe Frito Pequeno',desc:'Arroz, farofa, feijão fradinho, salada e fritas',price:81,img:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80',cat:'refeicoes'},
+  {id:26,name:'Peixe Frito Médio',desc:'Arroz, farofa, feijão fradinho, salada e fritas',price:96,img:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80',cat:'refeicoes'},
+  {id:27,name:'Peixe Frito Grande',desc:'Arroz, farofa, feijão fradinho, salada e fritas',price:121,img:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80',cat:'refeicoes',serves:'3-4 pessoas'},
+  {id:28,name:'Peixe Frito Família',desc:'Arroz, farofa, feijão fradinho, salada e fritas',price:146,img:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80',cat:'refeicoes',badge:'Especial',serves:'4-5 pessoas'},
+  {id:29,name:'Peixe Super Família (1500g)',desc:'Arroz, farofa, feijão fradinho, salada e fritas',price:187,img:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80',cat:'refeicoes',serves:'5-6 pessoas'},
+  {id:30,name:'Moqueca de Peixe',desc:'Arroz, farofa, feijão fradinho, salada e pirão',price:129.90,img:'https://images.unsplash.com/photo-1547592180-85f173990554?w=500&q=80',cat:'refeicoes',serves:'2 pessoas'},
+  {id:31,name:'Moqueca de Camarão',desc:'Arroz, farofa, feijão fradinho, salada e pirão',price:139.90,img:'https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=500&q=80',cat:'refeicoes',badge:'Destaque',serves:'2 pessoas'},
+  {id:32,name:'Moqueca Mista',desc:'Peixe e camarão — arroz, farofa, feijão, salada e pirão',price:148,img:'https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=500&q=80',cat:'refeicoes',serves:'2-3 pessoas'},
+  {id:33,name:'Arrumadinho',desc:'Arroz, farofa, feijão fradinho, salada, carne, bacon e calabresa',price:59,img:'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80',cat:'refeicoes'},
+  {id:34,name:'Mariscada',desc:'Arroz, farofa, feijão fradinho, salada e pirão',price:162,img:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80',cat:'refeicoes',badge:'Especial',serves:'3-4 pessoas'},
+  {id:35,name:'Lagosta 1kg',desc:'Arroz, farofa e salada',price:179,img:'https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=500&q=80',cat:'refeicoes',serves:'2 pessoas'},
+  {id:36,name:'Arroz',desc:'Porção extra de arroz',price:12,img:'https://images.unsplash.com/photo-1516684732162-798a0062be99?w=500&q=80',cat:'extras'},
+  {id:37,name:'Feijão',desc:'Porção extra de feijão',price:12,img:'https://images.unsplash.com/photo-1547592180-85f173990554?w=500&q=80',cat:'extras'},
+  {id:38,name:'Farofa',desc:'Porção extra de farofa',price:12,img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&q=80',cat:'extras'},
+  {id:39,name:'Salada',desc:'Porção extra de salada',price:12,img:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80',cat:'extras'},
+  {id:40,name:'Água sem Gás 500ml',desc:'Água mineral natural gelada',price:4,img:'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=500&q=80',cat:'bebidas'},
+  {id:41,name:'Água com Gás 500ml',desc:'Água mineral com gás gelada',price:6,img:'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=500&q=80',cat:'bebidas'},
+  {id:42,name:'Água de Coco',desc:'Água de coco gelada natural',price:7,img:'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=500&q=80',cat:'bebidas'},
+  {id:43,name:'Água Tônica Lata',desc:'Água tônica gelada em lata',price:8,img:'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=500&q=80',cat:'bebidas'},
+  {id:44,name:'H2OH Soda Can',desc:'H2OH gelada em lata',price:7,img:'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=500&q=80',cat:'bebidas'},
+  {id:45,name:'Refrigerante Lata',desc:'Soda can gelada',price:7,img:'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=500&q=80',cat:'bebidas'},
+  {id:46,name:'Energético',desc:'Energético gelado',price:15,img:'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=500&q=80',cat:'bebidas'},
+  {id:47,name:'Smirnoff Ice',desc:'Smirnoff Ice gelada',price:12,img:'https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=500&q=80',cat:'bebidas',alcoholic:true},
+  {id:48,name:'Suco de Frutas 400ml',desc:'Suco de frutas gelado 400ml',price:10,img:'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=500&q=80',cat:'bebidas'},
+  {id:49,name:'Heineken 600ml',desc:'Heineken gelada 600ml',price:null,img:'https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=500&q=80',cat:'cervejas',alcoholic:true},
+  {id:50,name:'Brahma Duplo Malte 600ml',desc:'Brahma Duplo Malte gelada 600ml',price:null,img:'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=500&q=80',cat:'cervejas',alcoholic:true},
+  {id:51,name:'Amstel 600ml',desc:'Amstel gelada 600ml',price:null,img:'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=500&q=80',cat:'cervejas',alcoholic:true},
+  {id:52,name:'Devassa 600ml',desc:'Devassa gelada 600ml',price:null,img:'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=500&q=80',cat:'cervejas',alcoholic:true},
+  {id:53,name:'Original 600ml',desc:'Original gelada 600ml',price:null,img:'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=500&q=80',cat:'cervejas',alcoholic:true},
+  {id:54,name:'Heineken Long Neck',desc:'Heineken long neck gelada',price:null,img:'https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=500&q=80',cat:'cervejas',alcoholic:true,badge:'Destaque'},
+  {id:55,name:'Heineken 0% Álcool',desc:'Heineken sem álcool long neck gelada',price:null,img:'https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=500&q=80',cat:'cervejas'},
+  {id:56,name:'Malzebier Long Neck',desc:'Malzebier gelada long neck',price:null,img:'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=500&q=80',cat:'cervejas',alcoholic:true},
+  {id:57,name:'Caipiroska de Slova 400ml',desc:'Frutas da estação',price:13,img:'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=500&q=80',cat:'drinks',alcoholic:true},
+  {id:58,name:'Caipiroska 400ml',desc:'Velho Barreiro ou Pitú com frutas da estação',price:13,img:'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=500&q=80',cat:'drinks',alcoholic:true},
+  {id:59,name:'Caipiroska Dobrada 400ml',desc:'Caipirinha ou caipiroska dupla',price:20,img:'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=500&q=80',cat:'drinks',alcoholic:true},
+  {id:60,name:'Caipiroska Smirnoff/Orloff 400ml',desc:'Frutas da estação',price:17,img:'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=500&q=80',cat:'drinks',alcoholic:true},
+  {id:61,name:'Roska de Kiwi ou Morango 400ml',desc:'Caipiroska especial de kiwi ou morango',price:15,img:'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=500&q=80',cat:'drinks',alcoholic:true},
+  {id:62,name:'Caipiroska de Absolut 400ml',desc:'Vodka Absolut com frutas frescas',price:25,img:'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=500&q=80',cat:'drinks',alcoholic:true,badge:'Especial'},
+  {id:63,name:'Cocoroska 400ml',desc:'Drink refrescante de coco',price:25,img:'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=500&q=80',cat:'drinks',alcoholic:true},
+  {id:64,name:'Espanhola 400ml',desc:'Drink espanhol gelado',price:18,img:'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=500&q=80',cat:'drinks',alcoholic:true},
+  {id:65,name:'Gin com Pitaia',desc:'Gin premium com pitaia fresca',price:29.90,img:'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=500&q=80',cat:'drinks',alcoholic:true,badge:'Novo'},
+  {id:66,name:'Pinacolada',desc:'Gelo, leite condensado, creme de leite e leite de coco',price:24.99,img:'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=500&q=80',cat:'drinks',alcoholic:true},
+  {id:67,name:'Sex on the Pier',desc:'Triple sec, suco de laranja e xarope de hibisco',price:21.99,img:'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=500&q=80',cat:'drinks',alcoholic:true},
+  {id:68,name:'Gamboa Summer',desc:'Campari, mix cítrico e água tônica',price:21.99,img:'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=500&q=80',cat:'drinks',alcoholic:true},
+  {id:69,name:'Lost Beach',desc:'Xarope de hibisco, sumo de limão, vodka e refrigerante de limão',price:21.99,img:'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=500&q=80',cat:'drinks',alcoholic:true},
+  {id:70,name:'Um Gin pra Chamar de Meu',desc:'Triple sec, xarope de hibisco, água tônica, limão siciliano e gelo',price:24,img:'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=500&q=80',cat:'drinks',alcoholic:true},
+  {id:71,name:'Lagoa Azul',desc:'Drink especial da casa',price:24,img:'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=500&q=80',cat:'drinks',alcoholic:true,badge:'Destaque'},
+  {id:72,name:'Old Parr',desc:'Dose de whisky Old Parr',price:20,img:'https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=500&q=80',cat:'doses',alcoholic:true},
+  {id:73,name:'Red Label',desc:'Dose de whisky Red Label',price:15,img:'https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=500&q=80',cat:'doses',alcoholic:true},
+  {id:74,name:'Vodka Absolut',desc:'Dose de vodka Absolut',price:14,img:'https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=500&q=80',cat:'doses',alcoholic:true},
+  {id:75,name:'Gin YVY',desc:'Dose de gin YVY',price:15,img:'https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=500&q=80',cat:'doses',alcoholic:true},
+  {id:76,name:'Vodka Smirnoff',desc:'Dose de vodka Smirnoff',price:10,img:'https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=500&q=80',cat:'doses',alcoholic:true},
+  {id:77,name:'Campari',desc:'Dose de Campari',price:10,img:'https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=500&q=80',cat:'doses',alcoholic:true},
+  {id:78,name:'Pitú',desc:'Dose de cachaça Pitú',price:7,img:'https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=500&q=80',cat:'doses',alcoholic:true},
+]
+
+const catOrder=['entradas','refeicoes','extras','bebidas','cervejas','drinks','doses']
+const catEmoji={entradas:'🦐',refeicoes:'🍽️',extras:'🍚',bebidas:'🥤',cervejas:'🍺',drinks:'🍹',doses:'🥃'}
+const fmtP=p=>p!=null?'R$ '+p.toFixed(2).replace('.',','):null
+
+/* ── SLIDESHOW ── */
+let si=0
+const slides=document.querySelectorAll('.slide')
+const dw=document.getElementById('slide-dots')
+slides.forEach((_,i)=>{
+  const d=document.createElement('button')
+  d.className='dot'+(i===0?' active':'')
+  d.onclick=()=>goSlide(i)
+  d.setAttribute('aria-label','Slide '+(i+1))
+  dw.appendChild(d)
+})
+function goSlide(n){
+  slides[si].classList.remove('active')
+  dw.children[si].classList.remove('active')
+  si=(n+slides.length)%slides.length
+  slides[si].classList.add('active')
+  dw.children[si].classList.add('active')
+}
+const autoSlide=setInterval(()=>goSlide(si+1),4500)
+
+/* ── RENDER CARDS ── */
+function cardHTML(item){
+  const pr=fmtP(item.price)
+  return `<div class="menu-card" onclick="openModal(${item.id})">
+    <div class="card-img-wrap">
+      <img src="${item.img}" alt="${item.name}" loading="lazy"/>
+      ${item.badge?`<span class="card-badge badge-${item.badge}">${item.badge}</span>`:''}
+      ${item.alcoholic?`<span class="card-age">+18</span>`:''}
+    </div>
+    <div class="card-body">
+      <div class="card-name">${item.name}</div>
+      <div class="card-desc">${item.desc}</div>
+      ${item.serves?`<div class="card-serves">👥 ${item.serves}</div>`:''}
+      <div class="card-footer">
+        ${pr?`<span class="card-price">${pr}</span>`:`<span class="card-consultar">${t('consultar')}</span>`}
+        <button class="card-add" onclick="event.stopPropagation();addToCartById(${item.id})" aria-label="Adicionar">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>`
+}
+
+let lastSearch=''
+const currentItems=()=>lastSearch?menu.filter(i=>i.name.toLowerCase().includes(lastSearch)||i.desc.toLowerCase().includes(lastSearch)):menu
+
+function renderCategories(items){
+  const cats=t('cats')
+  // Render category nav buttons
+  const navEl=document.getElementById('cat-nav')
+  if(navEl&&!lastSearch){
+    navEl.style.display='flex'
+    navEl.innerHTML=catOrder.map(cid=>{
+      const ci=items.filter(i=>i.cat===cid); if(!ci.length) return ''
+      return `<button class="cat-nav-btn" onclick="scrollToCat('${cid}')">${catEmoji[cid]} ${cats[cid]}</button>`
+    }).join('')
+  } else if(navEl) navEl.style.display='none'
+
+  document.getElementById('main-content').innerHTML='<div class="categories">'+
+    catOrder.map(cid=>{
+      const ci=items.filter(i=>i.cat===cid); if(!ci.length) return ''
+      return `<div class="cat-section" id="cat-${cid}">
+        <div class="cat-header">
+          <span style="font-size:18px">${catEmoji[cid]}</span>
+          <span class="cat-title">${cats[cid]}</span>
+          <span class="cat-count">(${ci.length} ${ci.length===1?t('item'):t('items')})</span>
+        </div>
+        <div class="carousel">${ci.map(cardHTML).join('')}</div>
+      </div>`
+    }).join('')+'</div>'
+}
+
+function scrollToCat(cid){
+  const el=document.getElementById('cat-'+cid)
+  if(el){
+    const offset=document.querySelector('.topbar').offsetHeight+document.getElementById('navbar').offsetHeight+document.getElementById('cat-nav').offsetHeight+8
+    window.scrollTo({top:el.offsetTop-offset,behavior:'smooth'})
+  }
+  // Highlight active button
+  document.querySelectorAll('.cat-nav-btn').forEach(b=>b.classList.remove('active'))
+  event.target.closest('.cat-nav-btn')?.classList.add('active')
+}
+
+/* ── BUSCA ── */
+let searchOpen=false
+document.getElementById('search-btn').onclick=()=>{
+  searchOpen=!searchOpen
+  const inp=document.getElementById('search-input'),icon=document.getElementById('search-icon')
+  inp.classList.toggle('open',searchOpen)
+  if(searchOpen){inp.focus();icon.innerHTML='<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'}
+  else{inp.value='';icon.innerHTML='<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>'; applySearch('')}
+}
+document.getElementById('search-input').oninput=e=>applySearch(e.target.value)
+
+function applySearch(q){
+  lastSearch=q.trim().toLowerCase()
+  document.getElementById('hero-section').style.display=lastSearch?'none':''
+  const sh=document.getElementById('search-header-wrap'),fi=currentItems()
+  sh.innerHTML=lastSearch?`<div class="search-header">${fi.length} resultado(s) para <span>"${q}"</span></div>`:''
+  renderCategories(fi)
+  if(lastSearch&&!fi.length)
+    document.getElementById('main-content').innerHTML=`<div class="no-result"><div class="icon">🔍</div><p>Nenhum item encontrado</p></div>`
+}
+
+/* ── MODAL ── */
+function openModal(id){
+  const item=menu.find(i=>i.id===id); if(!item) return
+  document.getElementById('modal-img').src=item.img
+  document.getElementById('modal-name').textContent=item.name
+  const pr=fmtP(item.price)
+  document.getElementById('modal-price-wrap').innerHTML=pr
+    ?`<div class="modal-price">${pr}</div>`
+    :`<div class="modal-consultar">${t('consultar')}</div>`
+  document.getElementById('modal-desc').textContent=item.desc
+  const tags=document.getElementById('modal-tags'); tags.innerHTML=''
+  if(item.serves) tags.innerHTML+=`<div class="modal-tag">👥 ${item.serves}</div>`
+  if(item.alcoholic) tags.innerHTML+=`<div class="modal-tag">🔞 +18</div>`
+  tags.innerHTML+=`<div class="modal-tag">📂 ${t('cats')[item.cat]||item.cat}</div>`
+  document.getElementById('modal-badge-wrap').innerHTML=item.badge
+    ?`<span class="card-badge badge-${item.badge}" style="position:absolute;top:10px;left:10px">${item.badge}</span>`:''
+  document.getElementById('modal-add-btn').onclick=()=>{addToCartById(id);closeModal()}
+  document.getElementById('modal-bg').classList.add('open')
+  document.body.style.overflow='hidden'
+}
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('modal-bg')) return
+  document.getElementById('modal-bg').classList.remove('open')
+  document.body.style.overflow=''
+}
+
+/* ── CART ── */
+let cart=[],cartOpen=false
+document.getElementById('cart-btn').onclick=toggleCart
+function toggleCart(){
+  cartOpen=!cartOpen
+  const s=document.getElementById('cart-sidebar'),bg=document.getElementById('cart-bg')
+  if(cartOpen){
+    s.style.display='flex'; bg.classList.add('open')
+    document.body.style.overflow='hidden'
+    renderCart(); applyTr()
+  } else {
+    s.style.display='none'; bg.classList.remove('open')
+    document.body.style.overflow=''
+  }
+}
+function addToCartById(id){
+  const item=menu.find(i=>i.id===id); if(!item) return
+  const ex=cart.find(i=>i.id===id); if(ex) ex.qty++; else cart.push({...item,qty:1})
+  updateBadge(); if(cartOpen) renderCart()
+}
+function updateQty(id,d){
+  const i=cart.find(i=>i.id===id); if(!i) return
+  i.qty+=d; if(i.qty<=0) cart=cart.filter(c=>c.id!==id)
+  updateBadge(); renderCart()
+}
+function removeFromCart(id){cart=cart.filter(i=>i.id!==id);updateBadge();renderCart()}
+function clearCart(){cart=[];updateBadge();renderCart()}
+function updateBadge(){
+  const tot=cart.reduce((s,i)=>s+i.qty,0)
+  const b=document.getElementById('cart-badge')
+  b.textContent=tot; b.style.display=tot>0?'flex':'none'
+}
+function renderCart(){
+  const tq=cart.reduce((s,i)=>s+i.qty,0)
+  document.getElementById('cart-count-label').textContent=`${tq} ${tq===1?t('item'):t('items')}`
+  const el=document.getElementById('cart-items'),footer=document.getElementById('cart-footer')
+  if(!cart.length){
+    el.innerHTML=`<div class="cart-empty"><div class="icon">🛒</div><p style="font-weight:700">${t('myOrder')} vazio</p><p style="font-size:11px;margin-top:4px;color:#88a8c0">Adicione itens do cardápio</p></div>`
+    footer.style.display='none'; return
+  }
+  footer.style.display='block'
+  el.innerHTML=cart.map(i=>`
+    <div class="cart-item">
+      <div class="cart-item-info">
+        <div class="cart-item-name">${i.name}</div>
+        <div class="cart-item-price">${i.price!=null?fmtP(i.price*i.qty):t('consultar')}</div>
+      </div>
+      <div class="cart-item-controls">
+        <button class="qty-btn" onclick="updateQty(${i.id},-1)">−</button>
+        <span class="qty-val">${i.qty}</span>
+        <button class="qty-btn" onclick="updateQty(${i.id},1)">+</button>
+        <button class="cart-del" onclick="removeFromCart(${i.id})">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        </button>
+      </div>
+    </div>`).join('')
+  const total=cart.filter(i=>i.price!=null).reduce((s,i)=>s+i.price*i.qty,0)
+  const hasC=cart.some(i=>i.price==null)
+  document.getElementById('cart-total').textContent=fmtP(total)+(hasC?' + '+t('consultar'):'')
+}
+
+function enviarPedido(){
+  const name=document.getElementById('field-name').value.trim()
+  const table=document.getElementById('field-table').value.trim()
+  const obsText=document.getElementById('field-obs').value.trim()
+  let ok=true
+  ;['name','table'].forEach(f=>{
+    document.getElementById('err-'+f).textContent=''
+    document.getElementById('field-'+f).classList.remove('error')
+  })
+  if(!name){document.getElementById('err-name').textContent=t('errName');document.getElementById('field-name').classList.add('error');ok=false}
+  if(!table){document.getElementById('err-table').textContent=t('errTable');document.getElementById('field-table').classList.add('error');ok=false}
+  if(!ok) return
+  const allObs=obsText
+
+  // Salvar na comanda digital e dashboard
+  const comanda={
+    id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+    mesa:table,
+    cliente:name,
+    pessoas:null,
+    items:cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty})),
+    obs:allObs||'',
+    status:'aberta',
+    abertura:new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}),
+    fechamento:null,
+    pagamento:null
+  }
+  const comandas=JSON.parse(localStorage.getItem('btComandas')||'[]')
+  const existente=comandas.find(c=>c.mesa===table&&c.status==='aberta')
+  if(existente){
+    cart.forEach(ci=>{
+      const ei=existente.items.find(i=>i.id===ci.id)
+      if(ei) ei.qty+=ci.qty
+      else existente.items.push({id:ci.id,name:ci.name,price:ci.price,qty:ci.qty})
+    })
+    if(allObs) existente.obs=existente.obs?(existente.obs+', '+allObs):allObs
+  } else {
+    comandas.push(comanda)
+  }
+  localStorage.setItem('btComandas',JSON.stringify(comandas))
+  window.dispatchEvent(new Event('storage'))
+
+  // Limpar carrinho e fechar sidebar
+  cart=[];updateBadge();renderCart()
+  document.getElementById('field-name').value=''
+  document.getElementById('field-table').value=''
+  document.getElementById('field-obs').value=''
+  if(cartOpen) toggleCart()
+
+  // Toast de sucesso
+  showToast(`Pedido enviado para Mesa ${table}!`)
+}
+
+function showToast(msg){
+  let toast=document.getElementById('toast-ok')
+  if(!toast){toast=document.createElement('div');toast.id='toast-ok';toast.className='toast-ok';document.body.appendChild(toast)}
+  toast.textContent=msg
+  setTimeout(()=>toast.classList.add('show'),10)
+  setTimeout(()=>toast.classList.remove('show'),3000)
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeModal();if(cartOpen)toggleCart()}
+})
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled',scrollY>10)
+})
+
+/* ── WEATHER & TIDE (Stella Mares, Salvador) ── */
+function updateWeatherTide(){
+  const h=new Date().getHours()
+  // Simulação clima baseado no horário
+  let icon='☀️',temp=28
+  if(h>=6&&h<10){icon='🌤️';temp=25}
+  else if(h>=10&&h<15){icon='☀️';temp=31}
+  else if(h>=15&&h<18){icon='⛅';temp=29}
+  else if(h>=18&&h<20){icon='🌅';temp=26}
+  else{icon='🌙';temp=24}
+  temp+=Math.round((Math.random()*4)-2)
+  document.getElementById('weather-icon').textContent=icon
+  document.getElementById('weather-temp').textContent=temp+'°C'
+
+  // Simulação maré baseada em ciclo ~6h
+  const cycle=((h*60+new Date().getMinutes())%360)/360
+  const isHigh=cycle<0.25||cycle>0.75
+  document.getElementById('tide-status').textContent=isHigh?'Maré Alta 🔺':'Maré Baixa 🔻'
+}
+updateWeatherTide()
+setInterval(updateWeatherTide,600000)
+
+/* ── SCROLL SPY for cat-nav ── */
+window.addEventListener('scroll',()=>{
+  const offset=150
+  let activeCat=null
+  catOrder.forEach(cid=>{
+    const el=document.getElementById('cat-'+cid)
+    if(el&&el.offsetTop-offset<=window.scrollY) activeCat=cid
+  })
+  document.querySelectorAll('.cat-nav-btn').forEach(btn=>{
+    const cat=btn.textContent.trim()
+    // match by checking if the button contains the emoji for this category
+    btn.classList.remove('active')
+  })
+  if(activeCat){
+    const emoji=catEmoji[activeCat]
+    document.querySelectorAll('.cat-nav-btn').forEach(btn=>{
+      if(btn.textContent.includes(emoji)) btn.classList.add('active')
+    })
+  }
+},{ passive:true })
+
+/* ── INIT ── */
+const finalMenu = JSON.parse(localStorage.getItem('btMenuCustom') || 'null') || menu
+renderCategories(finalMenu)
+applyTr()
+// Update functions that use 'menu' to use 'finalMenu'
+window.menu = finalMenu 
+</script>
+</body>
+</html>
