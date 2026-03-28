@@ -710,7 +710,7 @@ function applyTr(){
 /* obs tags removidas */
 
 /* ── DADOS ── */
-const menu=[
+let menu=[
   {id:1,name:'Carne do Sol c/ Farofa e Salada',desc:'Carne do sol com farofa e salada',price:48,img:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&q=80',cat:'entradas'},
   {id:2,name:'Carne do Sol c/ Fritas ou Aipim',desc:'Carne do sol com fritas ou aipim',price:58,img:'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80',cat:'entradas'},
   {id:3,name:'Filé c/ Fritas',desc:'Filé com fritas crocantes',price:69,img:'https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=500&q=80',cat:'entradas'},
@@ -1098,11 +1098,18 @@ window.addEventListener('scroll',()=>{
 },{ passive:true })
 
 /* ── INIT ── */
-const finalMenu = JSON.parse(localStorage.getItem('btMenuCustom') || 'null') || menu
-renderCategories(finalMenu)
+menu = JSON.parse(localStorage.getItem('btMenuCustom') || 'null') || menu
+renderCategories(menu)
 applyTr()
-// Update functions that use 'menu' to use 'finalMenu'
-window.menu = finalMenu 
+
+/* ── Atualiza cardápio quando admin altera produtos em outra aba ── */
+window.addEventListener('storage', function(e) {
+  if (e.key === 'btMenuCustom') {
+    menu = JSON.parse(e.newValue || 'null') || menu
+    renderCategories(menu)
+    applyTr()
+  }
+})
 </script>
 </body>
 </html>
