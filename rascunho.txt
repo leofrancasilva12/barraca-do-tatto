@@ -1,0 +1,1 @@
+no arquivo qrcode.html, coloque 3 botoes, um levara para o cardapio, outro para a comanda e outo para o dashbord, coloque um botoes e uma qrcode que leva para as 3 paginas, que eu vou subri no gihub para demostração. renomear arquivo qrcode, para index, o index para cardapio. pq quando abrir o site vai cair na pagina do qrcode

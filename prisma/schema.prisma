@@ -1,0 +1,295 @@
+// schema.prisma — Cardápio Digital SaaS (Barraca do Tatto)
+// Gerado automaticamente pela skill saas-architect
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ═══════════════════════════════════════════
+// AUTH & USERS
+// ═══════════════════════════════════════════
+
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  name       String
+  phone      String?
+  password   String
+  avatarUrl  String?
+  role       Role     @default(OWNER)
+  plan       Plan     @default(FREE)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  stores     Store[]
+  sessions   Session[]
+
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  token        String   @unique
+  refreshToken String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+enum Role {
+  OWNER
+  MANAGER
+  STAFF
+  SUPER_ADMIN
+}
+
+enum Plan {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+// ═══════════════════════════════════════════
+// LOJA / ESTABELECIMENTO
+// ═══════════════════════════════════════════
+
+model Store {
+  id             String   @id @default(cuid())
+  name           String
+  slug           String   @unique
+  description    String?
+  logoUrl        String?
+  bannerUrl      String?
+  phone          String
+  whatsappApiKey String?
+  address        String?
+  city           String?
+  state          String?
+  openingHours   Json?
+  themeColor     String   @default("#1e40af")
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  ownerId    String
+  owner      User       @relation(fields: [ownerId], references: [id])
+
+  categories Category[]
+  products   Product[]
+  orders     Order[]
+  analytics  AnalyticsEvent[]
+  coupons    Coupon[]
+
+  @@map("stores")
+}
+
+// ═══════════════════════════════════════════
+// CARDÁPIO
+// ═══════════════════════════════════════════
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  imageUrl    String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  storeId  String
+  store    Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  price        Decimal  @db.Decimal(10, 2)
+  promoPrice   Decimal? @db.Decimal(10, 2)
+  imageUrl     String?
+  isAvailable  Boolean  @default(true)
+  isFeatured   Boolean  @default(false)
+  sortOrder    Int      @default(0)
+  tags         String[] @default([])
+  extras       Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  storeId    String
+  store      Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  orderItems OrderItem[]
+
+  @@map("products")
+}
+
+// ═══════════════════════════════════════════
+// PEDIDOS
+// ═══════════════════════════════════════════
+
+model Order {
+  id              String       @id @default(cuid())
+  orderNumber     Int
+  customerName    String
+  customerPhone   String
+  customerAddress String?
+  deliveryType    DeliveryType @default(PICKUP)
+  status          OrderStatus  @default(PENDING)
+  subtotal        Decimal      @db.Decimal(10, 2)
+  deliveryFee     Decimal      @db.Decimal(10, 2) @default(0)
+  discount        Decimal      @db.Decimal(10, 2) @default(0)
+  total           Decimal      @db.Decimal(10, 2)
+  notes           String?
+  whatsappMsgId   String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  storeId    String
+  store      Store    @relation(fields: [storeId], references: [id])
+
+  couponId   String?
+  coupon     Coupon?  @relation(fields: [couponId], references: [id])
+
+  items      OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  quantity    Int
+  unitPrice   Decimal @db.Decimal(10, 2)
+  extras      Json?
+  notes       String?
+
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  DELIVERING
+  DELIVERED
+  CANCELLED
+}
+
+enum DeliveryType {
+  PICKUP
+  DELIVERY
+  DINE_IN
+}
+
+// ═══════════════════════════════════════════
+// CUPONS DE DESCONTO
+// ═══════════════════════════════════════════
+
+model Coupon {
+  id            String       @id @default(cuid())
+  code          String
+  discountType  DiscountType @default(PERCENTAGE)
+  discountValue Decimal      @db.Decimal(10, 2)
+  minOrderValue Decimal?     @db.Decimal(10, 2)
+  maxUses       Int?
+  usedCount     Int          @default(0)
+  expiresAt     DateTime?
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+
+  storeId  String
+  store    Store   @relation(fields: [storeId], references: [id])
+
+  orders   Order[]
+
+  @@unique([storeId, code])
+  @@map("coupons")
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+// ═══════════════════════════════════════════
+// ANALYTICS
+// ═══════════════════════════════════════════
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  event     String
+  metadata  Json?
+  sessionId String?
+  createdAt DateTime @default(now())
+
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id])
+
+  @@index([storeId, event, createdAt])
+  @@map("analytics_events")
+}
+
+// ═══════════════════════════════════════════
+// CONVERSAS WHATSAPP
+// ═══════════════════════════════════════════
+
+model WhatsAppConversation {
+  id            String    @id @default(cuid())
+  customerPhone String
+  customerName  String?
+  storePhone    String
+  lastMessage   String?
+  lastMessageAt DateTime?
+  isAiHandled   Boolean   @default(false)
+  context       Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  messages WhatsAppMessage[]
+
+  @@unique([customerPhone, storePhone])
+  @@map("whatsapp_conversations")
+}
+
+model WhatsAppMessage {
+  id             String           @id @default(cuid())
+  direction      MessageDirection
+  content        String
+  messageType    String           @default("text")
+  whatsappMsgId  String?          @unique
+  isFromAi       Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+
+  conversationId String
+  conversation   WhatsAppConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("whatsapp_messages")
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
