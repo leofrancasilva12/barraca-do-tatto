@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l \"d:/Projeto/Nova pasta/Barraca-do-tatto\"/*.html)",
+      "Bash(mv index.html cardapio.html)",
+      "Bash(mv qrcode.html index.html)"
+    ]
+  }
+}
