@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comanda — Buteco do Tattoo</title>
+  <title>Comanda — Buteco do Tatto</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet" />
   <style>
@@ -15,9 +15,9 @@
     }
 
     :root {
-      --blue: #000;
-      --blue2: #222;
-      --bluelight: rgba(0, 0, 0, .06);
+      --blue: #1c3aa1;
+      --blue2: #3f6fd8;
+      --bluelight: #e7edfb;
       --yellow: #f5c518;
       --dark: #1a2a3a;
       --bg: #f4f7fb;
@@ -36,9 +36,9 @@
       --text: #fff;
       --sub: #aaa;
       --dark: #fff;
-      --blue: #fff;
-      --blue2: #e0e0e0;
-      --bluelight: rgba(255, 255, 255, .06);
+      --blue: #5b82ea;
+      --blue2: #7ea0f2;
+      --bluelight: rgba(91, 130, 234, .14);
       --green: #00b894;
       --red: #ff6b6b;
       --orange: #feca57;
@@ -105,9 +105,11 @@
       align-items: center;
       justify-content: center;
       font-size: 20px;
-      box-shadow: 0 4px 12px rgba(0, 119, 182, .4);
+      box-shadow: 0 4px 12px rgba(28, 58, 161, .35);
       flex-shrink: 0;
+      overflow: hidden;
     }
+    .brand-icon img { width: 100%; height: 100%; object-fit: contain; padding: 5px }
 
     .brand h1 {
       font-size: 17px;
@@ -1555,10 +1557,10 @@
   <div class="top-header">
     <div class="top-header-inner">
       <div class="brand">
-        <div class="brand-icon">🧾</div>
+        <div class="brand-icon"><img src="assets/logo-white.png" alt="Buteco do Tatto"/></div>
         <div>
           <h1>Comanda</h1>
-          <div class="sub">Buteco do Tattoo · Stella Mares</div>
+          <div class="sub">Buteco do Tatto · Stella Mares</div>
         </div>
       </div>
       <div class="nav-links">
@@ -2060,7 +2062,7 @@
       const total = c.items.filter(i => i.price != null).reduce((s, i) => s + i.price * i.qty, 0)
       const w = window.open('', '_blank', 'width=320,height=500')
       if (!w) { alert('Popup bloqueado. Permita popups para imprimir.'); return }
-      w.document.write(`<html><head><title>Mesa ${esc(c.mesa)}</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:monospace;font-size:12px;padding:10px;width:280px}h2{text-align:center;margin-bottom:8px}hr{border:none;border-top:1px dashed #999;margin:6px 0}.row{display:flex;justify-content:space-between;padding:2px 0}.total{font-weight:bold;font-size:14px}</style></head><body><h2>🌴 Buteco do Tattoo</h2><p style="text-align:center;font-size:10px">Stella Mares — Salvador</p><hr><div class="row"><b>Mesa: ${esc(c.mesa)}</b><span>${esc(c.abertura)}</span></div>${c.cliente ? '<div>Cliente: ' + esc(c.cliente) + '</div>' : ''}${c.atendente ? '<div>Atendente: ' + esc(c.atendente) + '</div>' : ''}<hr>${c.items.map(i => `<div class="row"><span>${esc(i.name)} x${i.qty}</span><span>${i.price != null ? fmtP(i.price * i.qty) : 'Consultar'}</span></div>`).join('')}<hr><div class="row total"><span>TOTAL</span><span>${fmtP(total)}</span></div><hr><p style="text-align:center;font-size:9px;margin-top:6px">Obrigado! 🌴</p><script>setTimeout(()=>window.print(),300)<\/script></body></html>`)
+      w.document.write(`<html><head><title>Mesa ${esc(c.mesa)}</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:monospace;font-size:12px;padding:10px;width:280px}h2{text-align:center;margin-bottom:8px}hr{border:none;border-top:1px dashed #999;margin:6px 0}.row{display:flex;justify-content:space-between;padding:2px 0}.total{font-weight:bold;font-size:14px}</style></head><body><h2>🌴 Buteco do Tatto</h2><p style="text-align:center;font-size:10px">Stella Mares — Salvador</p><hr><div class="row"><b>Mesa: ${esc(c.mesa)}</b><span>${esc(c.abertura)}</span></div>${c.cliente ? '<div>Cliente: ' + esc(c.cliente) + '</div>' : ''}${c.atendente ? '<div>Atendente: ' + esc(c.atendente) + '</div>' : ''}<hr>${c.items.map(i => `<div class="row"><span>${esc(i.name)} x${i.qty}</span><span>${i.price != null ? fmtP(i.price * i.qty) : 'Consultar'}</span></div>`).join('')}<hr><div class="row total"><span>TOTAL</span><span>${fmtP(total)}</span></div><hr><p style="text-align:center;font-size:9px;margin-top:6px">Obrigado! 🌴</p><script>setTimeout(()=>window.print(),300)<\/script></body></html>`)
     }
 
     /* ── MODALS ── */
@@ -2073,7 +2075,7 @@
       const q = document.getElementById('add-search').value.toLowerCase().trim()
       const f = q ? menu.filter(i => i.name.toLowerCase().includes(q)) : menu
       const el = document.getElementById('menu-list')
-      el.innerHTML = catOrder.map(cat => { const items = f.filter(i => i.cat === cat); if (!items.length) return ''; return `<div class="cat-sec"><div class="cat-lbl">${catNames[cat]}</div>${items.map(i => `<div class="mi"><img class="mi-img" src="${i.img}" alt="${i.name}" loading="lazy"/><div class="mi-info"><div class="mi-name">${i.name}</div><div class="mi-price">${fmtP(i.price)}</div></div><button class="mi-add" onclick="addItemToComanda(${i.id})"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>`).join('')}</div>` }).join('')
+      el.innerHTML = catOrder.map(cat => { const items = f.filter(i => i.cat === cat); if (!items.length) return ''; return `<div class="cat-sec"><div class="cat-lbl">${catNames[cat]}</div>${items.map(i => `<div class="mi"><img class="mi-img" src="${esc(i.img)}" alt="${esc(i.name)}" loading="lazy"/><div class="mi-info"><div class="mi-name">${esc(i.name)}</div><div class="mi-price">${fmtP(i.price)}</div></div><button class="mi-add" onclick="addItemToComanda(${i.id})"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>`).join('')}</div>` }).join('')
       if (!f.length) el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--sub)">🔍 Nada encontrado</div>'
     }
 

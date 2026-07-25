@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Dashboard — Buteco do Tattoo</title>
+<title>Dashboard — Buteco do Tatto</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --blue:#000;--blue2:#222;--bluelight:rgba(0,0,0,.06);
+  --blue:#1c3aa1;--blue2:#3f6fd8;--bluelight:#e7edfb;
   --yellow:#f5c518;--dark:#1a2a3a;--bg:#f4f7fb;
   --card:#fff;--text:#1a2a3a;--sub:#6b7f94;
   --green:#27ae60;--red:#e74c3c;--orange:#e67e22;--purple:#8e44ad;
 }
 [data-theme="dark"]{
   --bg:#000;--card:#111;--text:#fff;--sub:#aaa;--dark:#fff;
-  --blue:#fff;--blue2:#e0e0e0;--bluelight:rgba(255,255,255,.06);
+  --blue:#5b82ea;--blue2:#7ea0f2;--bluelight:rgba(91,130,234,.14);
   --green:#00b894;--red:#ff6b6b;--orange:#feca57;--yellow:#ffeaa7;--purple:#a29bfe;
 }
 html{scroll-behavior:smooth}
@@ -28,7 +28,8 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .top-header{background:#fff;padding:14px 20px;color:#1a2a3a;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.06);border-bottom:1.5px solid #e0e5ee}
 .top-header-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:10px}
-.brand-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 12px rgba(0,0,0,.3);flex-shrink:0}
+.brand-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 12px rgba(28,58,161,.35);flex-shrink:0;overflow:hidden}
+.brand-icon img{width:100%;height:100%;object-fit:contain;padding:5px}
 .brand h1{font-size:17px;font-weight:900;letter-spacing:-.5px}
 .brand .sub{font-size:10px;opacity:.6;font-weight:500;margin-top:1px}
 .status-btn{background:#27ae60;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;transition:all .2s;min-height:44px;box-sizing:border-box}
@@ -147,10 +148,11 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .login-box{background:#fff;border-radius:16px;padding:32px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;animation:mSlide .3s ease}
 .login-box h2{font-size:20px;font-weight:900;color:#1a2a3a;margin-bottom:4px}
 .login-box .login-sub{font-size:12px;color:#6b7f94;margin-bottom:24px}
-.login-box .login-icon{font-size:48px;margin-bottom:12px}
+.login-box .login-icon{margin-bottom:14px}
+.login-box .login-icon img{width:96px;height:96px;object-fit:contain;margin:0 auto;display:block}
 .login-input{width:100%;background:#f0f3f8;border:1.5px solid #e0e5ee;padding:12px 16px;border-radius:10px;font-size:14px;color:#1a2a3a;font-family:inherit;margin-bottom:10px}
-.login-input:focus{outline:none;border-color:#000}
-.login-btn{width:100%;background:#000;color:#fff;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .2s;margin-top:6px}
+.login-input:focus{outline:none;border-color:var(--blue)}
+.login-btn{width:100%;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .2s,transform .2s;margin-top:6px;box-shadow:0 6px 18px rgba(28,58,161,.35)}
 .login-btn:hover{opacity:.9}
 .login-remember{display:flex;align-items:center;justify-content:flex-start;margin:2px 0 10px;gap:8px}
 .login-remember label{display:flex;align-items:center;gap:7px;font-size:12px;color:#6b7f94;cursor:pointer;user-select:none}
@@ -334,8 +336,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 [data-theme="dark"] .btn-copy{color:#000}
 [data-theme="dark"] .calc-key.eq{color:#000}
 [data-theme="dark"] .calc-key.eq:hover{background:#e0e0e0}
-[data-theme="dark"] .login-btn{background:#fff;color:#000}
-[data-theme="dark"] .login-btn:hover{background:#e0e0e0}
+[data-theme="dark"] .login-btn{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff}
 [data-theme="dark"] .a-btn-edit:hover{background:var(--blue);color:#000}
 [data-theme="dark"] .ot-badge{color:#000}
 [data-theme="dark"] .report-box{background:var(--card);border-color:rgba(255,255,255,.06)}
@@ -375,9 +376,9 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <!-- LOGIN SCREEN -->
 <div class="login-screen" id="login-screen">
   <div class="login-box">
-    <div class="login-icon">🔐</div>
+    <div class="login-icon"><img src="assets/logo.png" alt="Buteco do Tatto"/></div>
     <h2>Dashboard</h2>
-    <div class="login-sub">Buteco do Tattoo · Acesso Restrito</div>
+    <div class="login-sub">Buteco do Tatto · Acesso Restrito</div>
     <input class="login-input" id="login-user" type="text" placeholder="Usuário" onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()"/>
     <input class="login-input" id="login-pass" type="password" placeholder="Senha" onkeydown="if(event.key==='Enter')doLogin()"/>
     <div class="login-remember"><label><input type="checkbox" id="login-remember"/> Lembrar de mim</label></div>
@@ -390,8 +391,8 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <div class="top-header">
   <div class="top-header-inner">
     <div class="brand">
-      <div class="brand-icon">📊</div>
-      <div><h1>Dashboard</h1><div class="sub">Buteco do Tattoo · Stella Mares</div></div>
+      <div class="brand-icon"><img src="assets/logo-white.png" alt="Buteco do Tatto"/></div>
+      <div><h1>Dashboard</h1><div class="sub">Buteco do Tatto · Stella Mares</div></div>
     </div>
     <div class="nav-links">
       <button class="status-btn" id="status-btn" onclick="toggleStatus()" title="Aberto/Fechado"><span id="status-icon">🔓</span> <span id="status-text">Aberto</span></button>
@@ -837,8 +838,8 @@ function init(){
   const dashGarcomSearch=(document.getElementById('dash-search-garcom')?.value||'').toLowerCase()
   const abertasFilt=dashGarcomSearch?abertas.filter(c=>(c.atendente||'').toLowerCase().includes(dashGarcomSearch)):abertas
   const otHTML=abertasFilt.length?abertasFilt.map(c=>`<div class="ot" onclick="viewComanda('${c.id}')">
-    <div class="ot-badge">${c.mesa}</div>
-    <div class="ot-info"><div class="ot-name">${c.atendente?'🏷️ '+c.atendente:'⛱️ '+c.mesa}</div><div class="ot-meta">${c.cliente?'👤 '+c.cliente+' · ':''}${getQty(c)} itens · ${c.abertura}</div></div>
+    <div class="ot-badge">${esc(c.mesa)}</div>
+    <div class="ot-info"><div class="ot-name">${c.atendente?'🏷️ '+esc(c.atendente):'⛱️ '+esc(c.mesa)}</div><div class="ot-meta">${c.cliente?'👤 '+esc(c.cliente)+' · ':''}${getQty(c)} itens · ${esc(c.abertura)}</div></div>
     <div class="ot-total">${fmtP(getTotal(c))}</div>
     <button class="ot-close" onclick="event.stopPropagation();fecharMesa('${c.id}')">Fechar</button>
   </div>`).join(''):'<div class="empty"><div class="icon">✅</div><p>Nenhum sombreiro aberto</p></div>'
@@ -1160,7 +1161,7 @@ function exportPDF(){
   const text=document.getElementById('report-text').textContent
   const w=window.open('','_blank','width=800,height=600')
   if(!w){alert('Popup bloqueado. Permita popups para imprimir.');return}
-  w.document.write('<html><head><title>Relatório Buteco do Tattoo</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:monospace;font-size:12px;padding:30px;line-height:1.8;white-space:pre-wrap;color:#1a2a3a}h1{font-family:sans-serif;font-size:18px;margin-bottom:16px;text-align:center}@media print{body{padding:15px}}</style></head><body><h1>Relatório — Buteco do Tattoo</h1>'+text.replace(/</g,'&lt;')+'<script>setTimeout(function(){window.print()},400)<\/script></body></html>')
+  w.document.write('<html><head><title>Relatório Buteco do Tatto</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:monospace;font-size:12px;padding:30px;line-height:1.8;white-space:pre-wrap;color:#1a2a3a}h1{font-family:sans-serif;font-size:18px;margin-bottom:16px;text-align:center}@media print{body{padding:15px}}</style></head><body><h1>Relatório — Buteco do Tatto</h1>'+text.replace(/</g,'&lt;')+'<script>setTimeout(function(){window.print()},400)<\/script></body></html>')
 }
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElementById('modal-detail').classList.remove('open');document.getElementById('modal-calc').classList.remove('open');closePayModal();closeDeleteModal()}})
